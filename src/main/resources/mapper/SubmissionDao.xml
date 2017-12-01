@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.tosim.actrainer.dao.SubmissionDao">
+  <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.Submission">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="remote_problem_id" jdbcType="VARCHAR" property="remoteProblemId" />
+    <result column="language" jdbcType="VARCHAR" property="language" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="remote_account_name" jdbcType="VARCHAR" property="remoteAccountName" />
+    <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="real_run_id" jdbcType="INTEGER" property="realRunId" />
+    <result column="compilation_error_info" jdbcType="VARCHAR" property="compilationErrorInfo" />
+    <result column="execution_time" jdbcType="INTEGER" property="executionTime" />
+    <result column="execution_memory" jdbcType="INTEGER" property="executionMemory" />
+    <result column="contest_id" jdbcType="INTEGER" property="contestId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj, 
+    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id, 
+    user_id, account_name
+  </sql>
+
+  <sql id="Part_Column_List">
+    id, submit_time,status,remote_oj,remote_problem_id,execution_time, execution_memory,source,language,account_name
+  </sql>
+
+  <resultMap id="PartResultMap" type="java.util.HashMap">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
+    <result column="remote_problem_id" jdbcType="VARCHAR" property="remoteProblemId" />
+    <result column="execution_time" jdbcType="INTEGER" property="executionTime" />
+    <result column="execution_memory" jdbcType="INTEGER" property="executionMemory" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="language" jdbcType="VARCHAR" property="language" />
+    <result column="compilation_error_info" jdbcType="VARCHAR" property="compilationErrorInfo" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+  </resultMap>
+  <select id="selectTotalCount" parameterType="top.tosim.actrainer.dto.SubmissionPageSelectDto" resultType="java.lang.Integer">
+    select count(*)
+    from submission
+    <where>
+      <if test="fromId!=null">
+        and id &lt;= #{fromeId,jdbcType=INTEGER}
+      </if>
+      <if test="contestId!=null">
+        and contes_id = #{contestId,jdbcType=INTEGER}
+      </if>
+      <if test="remoteOj!=null">
+        and remote_oj = #{remoteOj}
+      </if>
+      <if test="remoteProblemId!=null">
+        and remote_problem_id = #{remoteProblemId}
+      </if>
+      <if test="accountName!=null">
+        and account_name = #{accountName}
+      </if>
+      <if test="language!=null">
+        and language = #{language}
+      </if>
+      <if test="status!=null">
+        and status = #{status}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectPartByPage" parameterType="top.tosim.actrainer.dto.SubmissionPageSelectDto" resultMap="PartResultMap">
+    select
+    <include refid="Part_Column_List"/>
+    from submission
+    <where>
+      <if test="fromId!=null">
+        and id &lt;= #{fromeId,jdbcType=INTEGER}
+      </if>
+      <if test="remoteOj!=null">
+        and remote_oj = #{remoteOj}
+      </if>
+      <if test="remoteProblemId!=null">
+        and remote_problem_id = #{remoteProblemId}
+      </if>
+      <if test="accountName!=null">
+        and account_name = #{accountName}
+      </if>
+      <if test="language!=null">
+        and language = #{language}
+      </if>
+      <if test="status!=null">
+        and status = #{status}
+      </if>
+    </where>
+    order by id desc
+    limit #{start},#{size}
+  </select>
+
+  <select id="selectByOJAndRealRunId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from submission
+    where remote_oj = #{arg0}
+    and real_run_id = #{arg1}
+  </select>
+
+  <select id="selectAcCountByUser" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(*)
+    from submission
+    where user_id = #{arg1}
+    and status = "AC"
+  </select>
+
+  <select id="selectFailCountByUser" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(*)
+    from submission
+    where user_id = #{arg1}
+    and status != "AC"
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from submission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from submission
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="top.tosim.actrainer.entity.Submission">
+    insert into submission (id, submit_time, remote_problem_id, 
+      language, source, remote_account_name, 
+      remote_oj, status, real_run_id, 
+      compilation_error_info, execution_time, execution_memory, 
+      contest_id, user_id, account_name
+      )
+    values (#{id,jdbcType=INTEGER}, #{submitTime,jdbcType=TIMESTAMP}, #{remoteProblemId,jdbcType=VARCHAR}, 
+      #{language,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{remoteAccountName,jdbcType=VARCHAR}, 
+      #{remoteOj,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{realRunId,jdbcType=INTEGER}, 
+      #{compilationErrorInfo,jdbcType=VARCHAR}, #{executionTime,jdbcType=INTEGER}, #{executionMemory,jdbcType=INTEGER}, 
+      #{contestId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="top.tosim.actrainer.entity.Submission">
+    insert into submission
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="submitTime != null">
+        submit_time,
+      </if>
+      <if test="remoteProblemId != null">
+        remote_problem_id,
+      </if>
+      <if test="language != null">
+        language,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="remoteAccountName != null">
+        remote_account_name,
+      </if>
+      <if test="remoteOj != null">
+        remote_oj,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="realRunId != null">
+        real_run_id,
+      </if>
+      <if test="compilationErrorInfo != null">
+        compilation_error_info,
+      </if>
+      <if test="executionTime != null">
+        execution_time,
+      </if>
+      <if test="executionMemory != null">
+        execution_memory,
+      </if>
+      <if test="contestId != null">
+        contest_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="submitTime != null">
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remoteProblemId != null">
+        #{remoteProblemId,jdbcType=VARCHAR},
+      </if>
+      <if test="language != null">
+        #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteAccountName != null">
+        #{remoteAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteOj != null">
+        #{remoteOj,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="realRunId != null">
+        #{realRunId,jdbcType=INTEGER},
+      </if>
+      <if test="compilationErrorInfo != null">
+        #{compilationErrorInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="executionTime != null">
+        #{executionTime,jdbcType=INTEGER},
+      </if>
+      <if test="executionMemory != null">
+        #{executionMemory,jdbcType=INTEGER},
+      </if>
+      <if test="contestId != null">
+        #{contestId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="top.tosim.actrainer.entity.Submission">
+    update submission
+    <set>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remoteProblemId != null">
+        remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR},
+      </if>
+      <if test="language != null">
+        language = #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteAccountName != null">
+        remote_account_name = #{remoteAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteOj != null">
+        remote_oj = #{remoteOj,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="realRunId != null">
+        real_run_id = #{realRunId,jdbcType=INTEGER},
+      </if>
+      <if test="compilationErrorInfo != null">
+        compilation_error_info = #{compilationErrorInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="executionTime != null">
+        execution_time = #{executionTime,jdbcType=INTEGER},
+      </if>
+      <if test="executionMemory != null">
+        execution_memory = #{executionMemory,jdbcType=INTEGER},
+      </if>
+      <if test="contestId != null">
+        contest_id = #{contestId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null">
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="top.tosim.actrainer.entity.Submission">
+    update submission
+    set submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR},
+      language = #{language,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      remote_account_name = #{remoteAccountName,jdbcType=VARCHAR},
+      remote_oj = #{remoteOj,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      real_run_id = #{realRunId,jdbcType=INTEGER},
+      compilation_error_info = #{compilationErrorInfo,jdbcType=VARCHAR},
+      execution_time = #{executionTime,jdbcType=INTEGER},
+      execution_memory = #{executionMemory,jdbcType=INTEGER},
+      contest_id = #{contestId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      account_name = #{accountName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.tosim.actrainer.dao.UserDao">
+  <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="school" jdbcType="VARCHAR" property="school" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="ac_count" jdbcType="INTEGER" property="acCount" />
+    <result column="fail_count" jdbcType="INTEGER" property="failCount" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account_name, password, nick_name, school, email,description,icon,gender,ac_count,fail_count
+  </sql>
+
+  <sql id="Part_Column_List">
+    id, account_name, nick_name,icon,ac_count,fail_count,description
+  </sql>
+  <resultMap id="PartResultMap" type="java.util.HashMap">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="ac_count" jdbcType="INTEGER" property="acCount" />
+    <result column="fail_count" jdbcType="INTEGER" property="failCount" />
+    <!--<association property="acCount" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectAcCountByUser" fetchType="eager"/>-->
+    <!--<association property="fail_count" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectFailCountByUser" fetchType="eager"/>-->
+  </resultMap>
+  <select id="selectByAccountName" resultType="java.lang.Integer">
+    select count(*)
+    from user
+    where account_name = #{accountName}
+  </select>
+  <update id="updateIconByPrimaryKey">
+    update user
+    set icon = #{relativePath}
+    where id = #{id}
+  </update>
+  <update id="updateAcOrFailCount">
+    update user
+    <set>
+      <if test="flag == 1">
+        ac_count = ac_count+1,
+      </if>
+      <if test="flag == -1">
+        fail_count = fail_count+1,
+      </if>
+    </set>
+    where id = #{userId}
+  </update>
+  <select id="selectPartByPage" parameterType="top.tosim.actrainer.dto.UserPageSelectDto" resultMap="PartResultMap">
+    select
+    <include refid="Part_Column_List" />
+    from user
+    <where>
+      <if test="accountName!=null">
+        and account_name like '%${accountName}%'
+      </if>
+    </where>
+    order by ac_count desc,(ac_count/(ac_count+fail_count)) desc
+    limit #{start},#{size}
+  </select>
+
+  <select id="selectTotalCount" parameterType="top.tosim.actrainer.dto.UserPageSelectDto" resultType="java.lang.Integer">
+    select count(*)
+    from user
+    <where>
+    <if test="accountName!=null">
+      and account_name like '%${accountName}%'
+    </if>
+  </where>
+  </select>
+  <select id="selectByAccountNameAndPass" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where account_name = #{arg0}
+    and password = #{arg1}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="top.tosim.actrainer.entity.User">
+    insert into user (id, account_name, password,
+    nick_name, school, email,
+    ac_count, fail_count, gender,
+    icon, description)
+    values (#{id,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+    #{nickName,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+    #{acCount,jdbcType=INTEGER}, #{failCount,jdbcType=INTEGER}, #{gender,jdbcType=INTEGER},
+    #{icon,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="top.tosim.actrainer.entity.User">
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="nickName != null">
+        nick_name,
+      </if>
+      <if test="school != null">
+        school,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="acCount != null">
+        ac_count,
+      </if>
+      <if test="failCount != null">
+        fail_count,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="icon != null">
+        icon,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="acCount != null">
+        #{acCount,jdbcType=INTEGER},
+      </if>
+      <if test="failCount != null">
+        #{failCount,jdbcType=INTEGER},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null">
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="top.tosim.actrainer.entity.User">
+    update user
+    <set>
+      <if test="accountName != null">
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        school = #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="acCount != null">
+        ac_count = #{acCount,jdbcType=INTEGER},
+      </if>
+      <if test="failCount != null">
+        fail_count = #{failCount,jdbcType=INTEGER},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="top.tosim.actrainer.entity.User">
+    update user
+    set account_name = #{accountName,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      school = #{school,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      ac_count = #{acCount,jdbcType=INTEGER},
+      fail_count = #{failCount,jdbcType=INTEGER},
+      gender = #{gender,jdbcType=INTEGER},
+      icon = #{icon,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
