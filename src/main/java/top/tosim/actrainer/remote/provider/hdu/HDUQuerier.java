@@ -65,7 +65,7 @@ public class HDUQuerier implements Querier,Runnable{
                         status = this.queryResult(submission);
                         log.info("query status , "+status.getStatusType().name());
                     }else{//查询失败，保存到数据库，标记提交失败
-                        submission.setStatus(RemoteStatusType.FAILED_OTHER.name());
+                        submission.setStatus(RemoteStatusType.SUBMIT_FAILED.name());
                         //submissionDao.updateByPrimaryKeySelective(submission);//
                         updateToDatabase(submission);
                         break;

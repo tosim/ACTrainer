@@ -84,8 +84,8 @@ public class HDUSubmitter implements Submitter,Runnable{
                         submissionFailedSubmitCount++;
                         runId = this.submitCode(submission);
                     }else{//提交失败，保存到数据库
-                        //submission.setStatus(RemoteStatusType.SUBMIT_FAILED_PERM.name());
-                        //updateToDatabase(submission);
+                        submission.setStatus(RemoteStatusType.SUBMIT_FAILED.name());
+                        updateToDatabase(submission);
                         break;
                     }
                 }

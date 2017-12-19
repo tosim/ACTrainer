@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import top.tosim.actrainer.dao.ContestDao;
+import top.tosim.actrainer.dao.EditProblemDao;
 import top.tosim.actrainer.dao.UserDao;
 import top.tosim.actrainer.dto.ContestPageSelectDto;
 import top.tosim.actrainer.entity.Contest;
@@ -27,6 +28,8 @@ public class ContestService {
     ContestDao contestDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    EditProblemDao editProblemDao;
 
     public Map<String,Integer> getContestTotalCount(ContestPageSelectDto pageSelectDto){
         Map<String,Integer> totalCount = new HashMap<String, Integer>();
@@ -133,12 +136,12 @@ public class ContestService {
         Integer editProblemId = contestDao.selectEditIdFromContestProblem(contest.getId(),remoteOj,remoteProblemId);
         if(editProblemId == null){
             log.info("this problem has not edited");
-            contestDao.insertEditedProblemSelective(problem);//插入到edited_problem 获取到在edited_problem的id
+            editProblemDao.insertSelective(problem);//插入到edited_problem 获取到在edited_problem的id
             contestDao.updateContestProblemForEdit(contest.getId(),remoteOj,remoteProblemId,problem.getId());//更新edited_problem_id字段为上面插入的字段
         }else{
             log.info("this problem has been edited");
             problem.setId(editProblemId);
-            contestDao.updateEditedProblemByPrimaryKey(problem);
+            editProblemDao.updateByPrimaryKeySelective(problem);
         }
         ret.put("success",1);
         return ret;

@@ -3,6 +3,7 @@ package top.tosim.actrainer.entity;
 import lombok.Data;
 import top.tosim.actrainer.config.init.LanguageMapManager;
 import top.tosim.actrainer.remote.RemoteOJ;
+import top.tosim.actrainer.remote.RemoteStatusType;
 
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class Submission {
     private String accountName;         //提交的用户名
 
     public void init() {
-        this.status = "Pending";
+        this.status = RemoteStatusType.PENDING.name();
         this.submitTime = new Date();
         this.languageCode = LanguageMapManager.getLanguageMap(RemoteOJ.valueOf(remoteOj)).get(this.remoteOj);
     }

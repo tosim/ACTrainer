@@ -1,6 +1,7 @@
 package top.tosim.actrainer.dao;
 
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.jdbc.SQL;
 import top.tosim.actrainer.dto.ContestPageSelectDto;
 import top.tosim.actrainer.entity.Contest;
 import top.tosim.actrainer.entity.ContestProblem;
@@ -9,48 +10,150 @@ import top.tosim.actrainer.entity.Problem;
 import java.util.List;
 
 public interface ContestDao {
-    //用于带参数的分页查询
-    List<Contest> selectPartByPage(ContestPageSelectDto pageSelectDto);
-
-    //用于带参数的分页查询的总数
+    @SelectProvider(type = ContestDaoProvider.class,method = "selectTotalCount")
     Integer selectTotalCount(ContestPageSelectDto pageSelectDto);
 
-    //向比赛和题目关联表中插入一条题目
-    Integer insertIntoContestProblem(ContestProblem contestProblem);
+    @SelectProvider(type = ContestDaoProvider.class,method = "selectPartByPage")
+    @ResultMap("PartResultMap")
+    List<Contest> selectPartByPage(ContestPageSelectDto pageSelectDto);
 
-    //向contest中插入一场比赛
-    int insert(Contest record);
-
-    //向contest中插入一场比赛，排除null字段
-    int insertSelective(Contest record);
-
-    //根据id查询contest
-    Contest selectByPrimaryKey(Integer id);
-
-    //根据id更新contest,排除null字段
-    int updateByPrimaryKeySelective(Contest record);
-
-    //查询某次比赛中的某个题目是否被自定义编辑过，关联表中的edited_problem_id字段是否为null
+    //contest_problem
+    @Select("select edited_problem_id from contest_problem where contest_id = #{contestId} and remote_oj = #{remoteOj} and remote_problem_id = #{remoteProblemId}")
     Integer selectEditIdFromContestProblem(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj, @Param("remoteProblemId") String remoteProblemId);
 
-    //向edited_problem表中插入一条自定义编辑过的问题
-    int insertEditedProblemSelective(Problem problem);
+    @InsertProvider(type = ContestDaoProvider.class,method = "insertIntoContestProblem")
+    Integer insertIntoContestProblem(ContestProblem contestProblem);
 
-    //更新contest_problem表中的edited_problem_id ,表明这个比赛的这个题目被自定义编辑过，且题目描述在edited_problem表中的id为edited_problem_id
+    @Update("update contest_problem set edited_problem_id = #{editedProblemId} " +
+            "where contest_id = #{contestId} and remote_oj = #{remoteOj} and remote_problem_id = #{remoteProblemId}")
     int updateContestProblemForEdit(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj, @Param("remoteProblemId") String remoteProblemId,@Param("editedProblemId") Integer editedProblemId);
 
-    //更新edited_problem，用于二次编辑自定义编辑的题目，题目在edited_problem的id由contest_problem表中的edited_problem_id字段查询得出
-    int updateEditedProblemByPrimaryKey(Problem problem);
-
-    //查询某次比赛中是否有某道题目
+    @Select("select count(*) from contest_problem where contest_id = #{contestId} and remote_oj = #{remoteOj} and remote_problem_id = #{remoteProblemId}")
     Integer selectProblemFromContestProblem(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj, @Param("remoteProblemId") String remoteProblemId);
 
+    @Select("select * from contest_problem where contest_id = #{contestId}")
+    @ResultMap("ContestProblem")
     List<ContestProblem> selectRowsByContestId(Integer contestId);
+
+    @Select("select * from contest_problem where contest_id = #{contestId} and remote_oj = #{remoteOj} and remote_problem_id = #{remoteProblemId}")
+    @ResultMap("ContestProblem")
     ContestProblem selectRow(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj,@Param("remoteProblemId") Integer remoteProblemId);
-    int updateContestProblemByPrimaryKey(ContestProblem contestProblem);
+
+    @Delete("delete from contest_problem where contest_id = #{cid}")
     int deleteContestProblemByCid(Integer cid);
 
-    //not used
+    @UpdateProvider(type = ContestDaoProvider.class,method = "updateContestProblemByPrimaryKey")
+    int updateContestProblemByPrimaryKey(ContestProblem contestProblem);
+
+    //--
+    Contest selectByPrimaryKey(Integer id);
+    int updateByPrimaryKeySelective(Contest record);
     int updateByPrimaryKey(Contest record);
     int deleteByPrimaryKey(Integer id);
+    int insert(Contest record);
+    int insertSelective(Contest record);
+
+    class ContestDaoProvider{
+        private final String baseColumnList = " contest.id, title, start_time, duration, user_id,contest_type,password\n ";
+        private final String partColumnList = " contest.id, title, start_time, duration, user_id,contest_type,user.account_name\n ";
+        public String insertIntoContestProblem(ContestProblem contestProblem){
+            return new SQL(){{
+                INSERT_INTO("contest_problem");
+                if(contestProblem.getContestId() != null){
+                    VALUES("contest_id",contestProblem.getContestId()+"");
+                }
+                if(contestProblem.getRemoteOj() != null){
+                    VALUES("remote_oj",contestProblem.getRemoteOj());
+                }
+                if(contestProblem.getRemoteProblemId() != null){
+                    VALUES("remote_problem_id",contestProblem.getRemoteProblemId()+"");
+                }
+                if(contestProblem.getEditedProblemId() != null){
+                    VALUES("edited_problem_id",contestProblem.getEditedProblemId()+"");
+                }
+                if(contestProblem.getIndex() != null){
+                    VALUES("index",contestProblem.getIndex()+"");
+                }
+            }}.toString();
+        }
+        public String selectPartByPage(ContestPageSelectDto pageSelectDto){
+            return new SQL(){{
+                SELECT(partColumnList);
+                FROM("contest,user");
+                WHERE("contest.user_id = user.id");
+                if(pageSelectDto.getTitle() != null){
+                    WHERE("title like '%${title}%'");
+                }
+                if(pageSelectDto.getAccountName() != null){
+                    WHERE("user.account_name = #{accountName}");
+                }
+                if(pageSelectDto.getStatus().equals("Pending")){
+                    WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getStatus().equals("Runing")){
+                    WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
+                    WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getStatus().equals("Ended")){
+                    WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getContestType() != null){
+                    WHERE("contest_type = #{contestType}");
+                }
+                ORDER_BY("contest.id desc");
+            }}.toString();
+        }
+        public String selectTotalCount(ContestPageSelectDto pageSelectDto){
+            return new SQL(){{
+                SELECT("count(*)");
+                FROM("contest");
+                if(pageSelectDto.getAccountName() != null){
+                    FROM("user");
+                }
+                if(pageSelectDto.getTitle() != null){
+                    WHERE("title like '%${title}%'");
+                }
+                if(pageSelectDto.getAccountName() != null){
+                    WHERE("contest.user_id = user.id");
+                    WHERE("user.account_name = #{accountName}");
+                }
+                if(pageSelectDto.getStatus().equals("Pending")){
+                    WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getStatus().equals("Runing")){
+                    WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
+                    WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getStatus().equals("Ended")){
+                    WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                }
+                if(pageSelectDto.getContestType() != null){
+                    WHERE("contest_type = #{contestType}");
+                }
+                ORDER_BY("contest.id desc");
+            }}.toString();
+        }
+        public String updateContestProblemByPrimaryKey(ContestProblem contestProblem){
+            return new SQL(){{
+                UPDATE("contest_problem");
+                if(contestProblem.getContestId() != null){
+                    SET("contest_id = #{contestId}");
+                }
+                if(contestProblem.getRemoteOj() != null){
+                    SET("remote_oj = #{remoteOj}");
+                }
+                if(contestProblem.getRemoteProblemId() != null){
+                    SET("remote_problem_id = #{remoteProblemId,jdbcType=INTEGER}");
+                }
+                if(contestProblem.getEditedProblemId() != null){
+                    SET("edited_problem_id = #{editedProblemId,jdbcType=INTEGER}");
+                }
+                if(contestProblem.getIndex() != null){
+                    SET("`index` = #{index,jdbcType=INTEGER}");
+                }
+                WHERE("id = #{id}");
+            }}.toString();
+        }
+
+    }
 }

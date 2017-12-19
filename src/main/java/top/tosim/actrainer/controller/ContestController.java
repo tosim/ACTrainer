@@ -53,13 +53,19 @@ public class ContestController {
 
     @RequestMapping(value = "/{id}",method = RequestMethod.GET)
     @ResponseBody
-    public RespJson getContestProblemList(@PathVariable("id") Integer id,String password){
+    public RespJson getContestProblemList(HttpServletRequest request,@PathVariable("id") Integer id,String password){
         RespJson respJson = new RespJson();
         Contest contest = contestDao.selectByPrimaryKey(id);
-        if(contest.getPassword() != null && password != null && !contest.getPassword().equals(password)){
-            respJson.setSuccess(0);
-            return respJson;
+        User user = (User)request.getSession(true).getAttribute("user");
+        if(contest.getContestType().equals(1)){
+            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
+                if(user == null || !user.getId().equals(contest.getUserId())){
+                    respJson.setSuccess(0);
+                    return respJson;
+                }
+            }
         }
+
         List<Problem> containProblems = new ArrayList<Problem>();
 
         List<ContestProblem> contestProblemList = contestDao.selectRowsByContestId(contest.getId());
@@ -82,9 +88,20 @@ public class ContestController {
 
     @RequestMapping(value = "/{id}/{remoteOj}/{remoteProblemId}",method = RequestMethod.GET)
     @ResponseBody
-    public RespJson getContestProblem(@PathVariable("id") Integer id,@PathVariable("remoteOj") String remoteOj,@PathVariable("remoteProblemId") Integer remoteProblemId){
+    public RespJson getContestProblem(HttpServletRequest request,@PathVariable("id") Integer id,@PathVariable("remoteOj") String remoteOj,@PathVariable("remoteProblemId") Integer remoteProblemId,String password){
         log.info(id + " " + remoteOj + " " + remoteProblemId);
         RespJson respJson = new RespJson();
+        Contest contest = contestDao.selectByPrimaryKey(id);
+        User user = (User)request.getSession(true).getAttribute("user");
+        if(contest.getContestType().equals(1)){
+            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
+                if(user == null || !user.getId().equals(contest.getUserId())){
+                    respJson.setSuccess(0);
+                    return respJson;
+                }
+            }
+        }
+
         ContestProblem contestProblem = contestDao.selectRow(id,remoteOj,remoteProblemId);
         if(contestProblem.getEditedProblemId() == null){
             respJson.setObj(problemDao.selectByOjAndPid(remoteOj,remoteProblemId+""));
@@ -118,7 +135,7 @@ public class ContestController {
             if(problem.getIsEdited() != null && problem.getIsEdited().equals(1)){
                 //editedId = insert to editProblems
                 problem.setId(null);
-                contestDao.insertEditedProblemSelective(problem);
+                editProblemDao.insertSelective(problem);
                 contestProblem.setEditedProblemId(problem.getId());
             }
             log.info(JSON.toJSONString(contestProblem));
@@ -158,7 +175,7 @@ public class ContestController {
             contestProblem.setRemoteProblemId(Integer.parseInt(problem.getRemoteProblemId()));
             if(problem.getIsEdited() != null && problem.getIsEdited().equals(1)){
                 problem.setId(null);
-                contestDao.insertEditedProblemSelective(problem);
+                editProblemDao.insertSelective(problem);
                 contestProblem.setEditedProblemId(problem.getId());
             }
             contestProblem.setIndex(ix);

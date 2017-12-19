@@ -3,6 +3,8 @@ package top.tosim.actrainer.dao;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.jdbc.SQL;
 import top.tosim.actrainer.dto.ProblemPageSelectDto;
 import top.tosim.actrainer.dto.SubmissionPageSelectDto;
 import top.tosim.actrainer.entity.Submission;
@@ -15,32 +17,100 @@ public interface SubmissionDao {
     @ResultMap("BaseResultMap")
     List<Submission> selectByContestId(Integer contestId);
 
-    //用于带参数的分页查询
-    List<Map<String, Object>> selectPartByPage(SubmissionPageSelectDto pageSelectDto);
-
-    //用于带参数的分页查询的总数
+    @SelectProvider(type = SubmissionDaoProvider.class,method = "selectTotalCount")
     Integer selectTotalCount(SubmissionPageSelectDto pageSelectDto);
 
-    //插入
-    int insert(Submission record);
+    @SelectProvider(type = SubmissionDaoProvider.class,method = "selectPartByPage")
+    @ResultMap("PartResultMap")
+    List<Map<String, Object>> selectPartByPage(SubmissionPageSelectDto pageSelectDto);
 
-    //插入，排除null字段
-    int insertSelective(Submission record);
+    @SelectProvider(type = SubmissionDaoProvider.class,method = "selectByOJAndRealRunId")
+    @ResultMap("BaseResultMap")
+    Submission selectByOJAndRealRunId(@Param("Oj") String Oj, @Param("realRunId") Integer realRunId);
 
-    //更新，排除null字段
-    int updateByPrimaryKeySelective(Submission record);
-
-    //根据oj和runid查询提交
-    Submission selectByOJAndRealRunId(String Oj, Integer realRunId);
-
-    //根据用户id查询ac提交数
+    @Select("select count(*) from submission where user_id = #{userId} and status = 'AC'")
     int selectAcCountByUser(Integer userId);
 
-    //根据用户id查询非ac提交数
+    @Select("select count(*) from submission where user_id = #{userId} and status != 'AC'")
     int selectFailCountByUser(Integer userId);
 
-    //not used
+    //--
     int deleteByPrimaryKey(Integer id);
     int updateByPrimaryKey(Submission record);
     Submission selectByPrimaryKey(Integer id);
+    int insert(Submission record);
+    int insertSelective(Submission record);
+    int updateByPrimaryKeySelective(Submission record);
+
+    class SubmissionDaoProvider{
+        private final String baseColumnList = " id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj, \n" +
+                "    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,index\n" +
+                "    user_id, account_name ";
+        private final String partColumnList = "     id, submit_time,status,remote_oj,remote_problem_id,execution_time, execution_memory,source,language,account_name\n ";
+
+        public String selectTotalCount(SubmissionPageSelectDto pageSelectDto){
+            return new SQL(){{
+                SELECT("count(*)");
+                FROM("submission");
+                if(pageSelectDto.getFromId() != null){
+                    WHERE("id <= #{fromId}");
+                }
+                if(pageSelectDto.getContestId() != null){
+                    WHERE("contes_id = #{contestId}");
+                }
+                if(pageSelectDto.getRemoteOj() != null){
+                    WHERE("remote_oj = #{remoteOj}");
+                }
+                if(pageSelectDto.getRemoteProblemId() != null){
+                    WHERE("remote_problem_id = #{remoteProblemId}");
+                }
+                if(pageSelectDto.getAccountName() != null){
+                    WHERE("account_name = #{accountName}");
+                }
+                if(pageSelectDto.getLanguage() != null){
+                    WHERE("language = #{language}");
+                }
+                if(pageSelectDto.getStatus() != null){
+                    WHERE("status = #{status}");
+                }
+            }}.toString();
+        }
+        public String selectPartByPage(SubmissionPageSelectDto pageSelectDto){
+            return new SQL(){{
+                SELECT(partColumnList);
+                FROM("submission");
+                if(pageSelectDto.getFromId() != null){
+                    WHERE("id <= #{fromId}");
+                }
+                if(pageSelectDto.getContestId() != null){
+                    WHERE("contes_id = #{contestId}");
+                }
+                if(pageSelectDto.getRemoteOj() != null){
+                    WHERE("remote_oj = #{remoteOj}");
+                }
+                if(pageSelectDto.getRemoteProblemId() != null){
+                    WHERE("remote_problem_id = #{remoteProblemId}");
+                }
+                if(pageSelectDto.getAccountName() != null){
+                    WHERE("account_name = #{accountName}");
+                }
+                if(pageSelectDto.getLanguage() != null){
+                    WHERE("language = #{language}");
+                }
+                if(pageSelectDto.getStatus() != null){
+                    WHERE("status = #{status}");
+                }
+                ORDER_BY("id");
+            }}.toString()+" \nLIMIT #{start},#{size}";
+        }
+        public String selectByOJAndRealRunId(@Param("Oj") String Oj, @Param("realRunId") Integer realRunId){
+            return new SQL(){{
+                SELECT(baseColumnList);
+                FROM("submission");
+                WHERE("remote_oj = #{Oj}");
+                WHERE("real_run_id = #{realRunId}");
+            }}.toString();
+        }
+
+    }
 }

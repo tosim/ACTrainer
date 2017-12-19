@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.tosim.actrainer.dao.ProblemDao">
-
   <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.Problem">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
@@ -32,79 +31,6 @@
     id, remote_oj, remote_problem_id, url, title, time_limit, memory_limit, description, 
     input, output, sample_input, sample_output, hint, author ,source
   </sql>
-
-  <!--<select id="selectPartByContestId" parameterType="java.lang.Integer" resultMap="PartResultMap">-->
-    <!--select <include refid="Part_Column_List"/>-->
-    <!--from contest_problem,problem-->
-    <!--where contest_problem.contest_id = #{contestId}-->
-    <!--and problem.remote_problem_id = contest_problem.remote_problem_id-->
-  <!--</select>-->
-  <!--<select id="selectPartByPage" parameterType="top.tosim.actrainer.dto.ProblemPageSelectDto" resultMap="PartResultMap">-->
-    <!--select-->
-    <!--<include refid="Part_Column_List" />-->
-    <!--from problem-->
-    <!--<where>-->
-      <!--<if test="remoteOj!=null">-->
-        <!--and remote_oj = #{remoteOj}-->
-      <!--</if>-->
-      <!--<if test="remoteProblemId!=null">-->
-        <!--and remote_problem_id = #{remoteProblemId}-->
-      <!--</if>-->
-      <!--<if test="title!=null">-->
-        <!--and title like '%${title}%'-->
-      <!--</if>-->
-    <!--</where>-->
-    <!--order by id-->
-    <!--limit #{start},#{size}-->
-  <!--</select>-->
-  <!--<select id="selectByOjAndPid" resultMap="BaseResultMap">-->
-    <!--select-->
-    <!--<include refid="Base_Column_List" />-->
-    <!--from problem-->
-    <!--where remote_oj = #{arg0}-->
-    <!--and remote_problem_id = #{arg1}-->
-  <!--</select>-->
-  <!--<update id="updateByRemoteOjAndProblemId" parameterType="top.tosim.actrainer.entity.Problem">-->
-    <!--update problem-->
-    <!--<set>-->
-      <!--<if test="url != null">-->
-        <!--url = #{url,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="title != null">-->
-        <!--title = #{title,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="timeLimit != null">-->
-        <!--time_limit = #{timeLimit,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="memoryLimit != null">-->
-        <!--memory_limit = #{memoryLimit,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="description != null">-->
-        <!--description = #{description,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="input != null">-->
-        <!--input = #{input,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="output != null">-->
-        <!--output = #{output,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="sampleInput != null">-->
-        <!--sample_input = #{sampleInput,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="sampleOutput != null">-->
-        <!--sample_output = #{sampleOutput,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="hint != null">-->
-        <!--hint = #{hint,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="author != null">-->
-        <!--author = #{author,jdbcType=VARCHAR},-->
-      <!--</if>-->
-    <!--</set>-->
-    <!--where remote_oj = #{remoteOj,jdbcType=VARCHAR}-->
-    <!--and remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR}-->
-  <!--</update>-->
-
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select

@@ -7,7 +7,6 @@
   <sql id="Part_Column_List">
     id, account_name, nick_name,icon,ac_count,fail_count,description
   </sql>
-
   <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.User">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
@@ -31,7 +30,6 @@
     <!--<association property="acCount" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectAcCountByUser" fetchType="eager"/>-->
     <!--<association property="fail_count" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectFailCountByUser" fetchType="eager"/>-->
   </resultMap>
-
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
