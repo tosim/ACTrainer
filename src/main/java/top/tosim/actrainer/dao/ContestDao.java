@@ -45,6 +45,10 @@ public interface ContestDao {
     //查询某次比赛中是否有某道题目
     Integer selectProblemFromContestProblem(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj, @Param("remoteProblemId") String remoteProblemId);
 
+    List<ContestProblem> selectRowsByContestId(Integer contestId);
+    ContestProblem selectRow(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj,@Param("remoteProblemId") Integer remoteProblemId);
+    int updateContestProblemByPrimaryKey(ContestProblem contestProblem);
+    int deleteContestProblemByCid(Integer cid);
 
     //not used
     int updateByPrimaryKey(Contest record);

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.tosim.actrainer.dao.UserDao">
+  <sql id="Base_Column_List">
+    id, account_name, password, nick_name, school, email,description,icon,gender,ac_count,fail_count
+  </sql>
+  <sql id="Part_Column_List">
+    id, account_name, nick_name,icon,ac_count,fail_count,description
+  </sql>
+
   <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.User">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
@@ -14,13 +21,6 @@
     <result column="icon" jdbcType="VARCHAR" property="icon" />
     <result column="gender" jdbcType="INTEGER" property="gender" />
   </resultMap>
-  <sql id="Base_Column_List">
-    id, account_name, password, nick_name, school, email,description,icon,gender,ac_count,fail_count
-  </sql>
-
-  <sql id="Part_Column_List">
-    id, account_name, nick_name,icon,ac_count,fail_count,description
-  </sql>
   <resultMap id="PartResultMap" type="java.util.HashMap">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
@@ -31,57 +31,8 @@
     <!--<association property="acCount" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectAcCountByUser" fetchType="eager"/>-->
     <!--<association property="fail_count" javaType="java.lang.Integer" select="top.tosim.actrainer.dao.SubmissionDao.selectFailCountByUser" fetchType="eager"/>-->
   </resultMap>
-  <select id="selectByAccountName" resultType="java.lang.Integer">
-    select count(*)
-    from user
-    where account_name = #{accountName}
-  </select>
-  <update id="updateIconByPrimaryKey">
-    update user
-    set icon = #{relativePath}
-    where id = #{id}
-  </update>
-  <update id="updateAcOrFailCount">
-    update user
-    <set>
-      <if test="flag == 1">
-        ac_count = ac_count+1,
-      </if>
-      <if test="flag == -1">
-        fail_count = fail_count+1,
-      </if>
-    </set>
-    where id = #{userId}
-  </update>
-  <select id="selectPartByPage" parameterType="top.tosim.actrainer.dto.UserPageSelectDto" resultMap="PartResultMap">
-    select
-    <include refid="Part_Column_List" />
-    from user
-    <where>
-      <if test="accountName!=null">
-        and account_name like '%${accountName}%'
-      </if>
-    </where>
-    order by ac_count desc,(ac_count/(ac_count+fail_count)) desc
-    limit #{start},#{size}
-  </select>
 
-  <select id="selectTotalCount" parameterType="top.tosim.actrainer.dto.UserPageSelectDto" resultType="java.lang.Integer">
-    select count(*)
-    from user
-    <where>
-    <if test="accountName!=null">
-      and account_name like '%${accountName}%'
-    </if>
-  </where>
-  </select>
-  <select id="selectByAccountNameAndPass" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from user
-    where account_name = #{arg0}
-    and password = #{arg1}
-  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

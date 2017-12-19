@@ -3,7 +3,7 @@ package top.tosim.actrainer.entity;
 import lombok.Data;
 
 @Data
-public class Problem {
+public class EditedProblem {
     private Integer id;             //本地数据库编号
     private String remoteOj;        //原始OJ
     private String remoteProblemId; //原始OJ题号
@@ -21,6 +21,5 @@ public class Problem {
     private String source;          //出处
     private String author;          //作者
     private Integer isEdited;       //在比赛中的呈现是否修改过
-
 
 }

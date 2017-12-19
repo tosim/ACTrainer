@@ -1,6 +1,8 @@
 package top.tosim.actrainer.dao;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultMap;
+import org.apache.ibatis.annotations.Select;
 import top.tosim.actrainer.dto.ProblemPageSelectDto;
 import top.tosim.actrainer.dto.SubmissionPageSelectDto;
 import top.tosim.actrainer.entity.Submission;
@@ -9,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface SubmissionDao {
+    @Select("select * from submission where contest_id=#{contestId}")
+    @ResultMap("BaseResultMap")
+    List<Submission> selectByContestId(Integer contestId);
+
     //用于带参数的分页查询
     List<Map<String, Object>> selectPartByPage(SubmissionPageSelectDto pageSelectDto);
 

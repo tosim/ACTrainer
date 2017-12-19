@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import top.tosim.actrainer.dao.UserDao;
+import top.tosim.actrainer.dto.RespJson;
 import top.tosim.actrainer.dto.UserPageSelectDto;
 import top.tosim.actrainer.entity.User;
 
@@ -69,17 +70,17 @@ public class UserService {
     /*
     * 更新用户
     * */
-    public Map<String,Integer> updateUserById(HttpServletRequest request,int id,User putUser){
-        log.info("path id = " + id + " and user = " + JSON.toJSONString(putUser));
-        User user = (User)request.getSession(false).getAttribute("user");
-        Map<String,Integer> ret = new HashMap<String,Integer>();
+    public RespJson updateUserById(HttpServletRequest request, int id, User putUser){
+        RespJson respJson = new RespJson();
+        User user = (User)request.getSession(true).getAttribute("user");
         if(user == null || user.getId() != id ){
-            ret.put("success",0);
-            return ret;
+            respJson.setSuccess(0);
+            return respJson;
         }
+        putUser.setId(id);
         userDao.updateByPrimaryKeySelective(putUser);
-        ret.put("success",1);
-        return ret;
+        respJson.setSuccess(1);
+        return respJson;
     }
 
     /*

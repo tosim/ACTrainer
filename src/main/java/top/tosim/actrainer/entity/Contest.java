@@ -22,9 +22,10 @@ public class Contest {
 
     private String accountName;
 
-    private List<List<Object>> problemList;
+//    private List<List<Object>> problemList;
 
     private List<Problem> containProblems;
+
 
     public String getAccountName() {
         return accountName;
@@ -50,9 +51,6 @@ public class Contest {
         this.password = password;
     }
 
-    public List<List<Object>> getProblemList() {
-        return problemList;
-    }
 
     public String getStatus() {
         if(new Date().getTime() > this.startTime + this.duration) return "Ended";
@@ -70,10 +68,6 @@ public class Contest {
 
     public void setContestType(Integer contestType) {
         this.contestType = contestType;
-    }
-
-    public void setProblemList(List<List<Object>> problemList) {
-        this.problemList = problemList;
     }
 
     public Integer getId() {

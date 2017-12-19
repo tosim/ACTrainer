@@ -16,7 +16,25 @@ import top.tosim.actrainer.entity.ContestProblem;
 public class ContestDaoTest {
     @Autowired
     ContestDao contestDao;
+    @Autowired
+    EditProblemDao editProblemDao;
+    @Test
+    public void selectContestProblemRows(){
+//        List<ContestProblem> list = contestDao.selectRowsByContestId(3);
+//        System.out.println(JSON.toJSONString(list));
+        System.out.println(JSON.toJSONString(editProblemDao.selectByPrimaryKey(1)));
 
+    }
+    @Test
+    public void testInsert(){
+        Contest contest = new Contest();
+        contest.setUserId(1);
+        contest.setTitle("ttt");
+        contest.setStartTime(new Long("1513933273816"));
+        contest.setDuration(new Long("86400000"));
+        contest.setContestType(1);
+        contestDao.insertSelective(contest);
+    }
     @Test
     public void test(){
         ContestPageSelectDto pageSelectDto = new ContestPageSelectDto();
@@ -54,9 +72,28 @@ public class ContestDaoTest {
     }
     @Test
     public void test5(){
-        ContestPageSelectDto pageSelectDto = new ContestPageSelectDto();
-        pageSelectDto.validateAndCalculateStart(10);
-//        contestDao.selectPartByPage(pageSelectDto);
-        System.out.println(JSON.toJSONString(contestDao.selectPartByPage(pageSelectDto)));
+//        ContestPageSelectDto pageSelectDto = new ContestPageSelectDto();
+//        pageSelectDto.validateAndCalculateStart(10);
+////        contestDao.selectPartByPage(pageSelectDto);
+//        System.out.println(JSON.toJSONString(contestDao.selectPartByPage(pageSelectDto)));
+        ContestProblem contestProblem = new ContestProblem();
+        contestProblem.setId(1);
+        contestProblem.setContestId(1);
+        contestProblem.setRemoteOj("HDU");
+        contestProblem.setIndex(1);
+        contestProblem.setRemoteProblemId(1000);
+        contestProblem.setEditedProblemId(1);
+        contestDao.updateContestProblemByPrimaryKey(contestProblem);
+    }
+
+    @Test
+    public void testtt(){
+        ContestProblem contestProblem = new ContestProblem();
+        contestProblem.setContestId(1);
+        contestProblem.setRemoteOj("HDU");
+        contestProblem.setRemoteProblemId(Integer.parseInt(2222+""));
+        contestProblem.setIndex(1);
+        contestProblem.setEditedProblemId(null);
+        contestDao.insertIntoContestProblem(contestProblem);
     }
 }

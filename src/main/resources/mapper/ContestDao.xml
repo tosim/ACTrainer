@@ -9,7 +9,7 @@
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="contest_type" jdbcType="INTEGER" property="contestType"/>
     <result column="password" jdbcType="VARCHAR" property="password"/>
-    <association property="containProblems" select="top.tosim.actrainer.dao.ProblemDao.selectPartByContestId" column="id" fetchType="eager"/>
+    <!--<association property="containProblems" select="top.tosim.actrainer.dao.ProblemDao.selectPartByContestId" column="id" fetchType="eager"/>-->
   </resultMap>
   <resultMap id="PartResultMap" type="top.tosim.actrainer.entity.Contest">
     <id column="id" jdbcType="INTEGER" property="id" />
@@ -45,6 +45,9 @@
       <if test="editedProblemId != null">
         edited_problem_id,
       </if>
+      <if test="index != null">
+        `index`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -61,6 +64,9 @@
       </if>
       <if test="editedProblemId != null">
         #{editedProblemId,jdbcType=INTEGER},
+      </if>
+      <if test="index != null">
+        #{index,jdbcType=INTEGER}
       </if>
     </trim>
   </insert>
@@ -181,10 +187,10 @@
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
       </if>
-      <if test="contest_type != null">
+      <if test="contestType != null">
         #{contestType,jdbcType=INTEGER},
       </if>
-      <if test="userId != null">
+      <if test="password != null">
         #{password,jdbcType=VARCHAR},
       </if>
     </trim>
@@ -385,5 +391,48 @@
     and remote_oj = #{remoteOj}
     and remote_problem_id = #{remoteProblemId}
   </select>
-
+  <resultMap id="ContestProblem" type="top.tosim.actrainer.entity.ContestProblem">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contest_id" jdbcType="INTEGER" property="contestId" />
+    <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
+    <result column="remote_problem_id" jdbcType="INTEGER" property="remoteProblemId" />
+    <result column="edited_problem_id" jdbcType="INTEGER" property="editedProblemId" />
+  </resultMap>
+  <select id="selectRowsByContestId" resultMap="ContestProblem">
+    select *
+    from contest_problem
+    where contest_id = #{contestId}
+  </select>
+<select id="selectRow" resultMap="ContestProblem">
+  select *
+    from contest_problem
+    where contest_id = #{contestId}
+    and remote_oj = #{remoteOj}
+    and remote_problem_id = #{remoteProblemId}
+</select>
+  <update id="updateContestProblemByPrimaryKey" parameterType="top.tosim.actrainer.entity.ContestProblem">
+    update contest_problem
+    <set>
+      <if test="contestId != null">
+        contest_id = #{contestId},
+      </if>
+      <if test="remoteOj != null">
+        remote_oj = #{remoteOj},
+      </if>
+      <if test="remoteProblemId != null">
+        remote_problem_id = #{remoteProblemId,jdbcType=INTEGER},
+      </if>
+      <if test="editedProblemId != null">
+        edited_problem_id = #{editedProblemId,jdbcType=INTEGER},
+      </if>
+      <if test="index != null">
+        `index` = #{index,jdbcType=INTEGER}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <delete id="deleteContestProblemByCid">
+    delete from contest_problem
+    where contest_id = #{cid}
+  </delete>
 </mapper>

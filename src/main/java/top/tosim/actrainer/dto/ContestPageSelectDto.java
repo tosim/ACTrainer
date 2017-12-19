@@ -1,5 +1,7 @@
 package top.tosim.actrainer.dto;
 
+import lombok.Data;
+
 import java.util.Date;
 
 public class ContestPageSelectDto extends PageSelectDto{

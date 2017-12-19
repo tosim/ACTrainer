@@ -8,9 +8,9 @@ public class ProblemPageSelectDto extends PageSelectDto{
     @Override
     public void validateAndCalculateStart(Integer defaultSize) {
         super.validateAndCalculateStart(defaultSize);
-        if(this.remoteOj.equals("")) this.remoteOj = null;
-        if(this.remoteProblemId.equals("")) this.remoteProblemId = null;
-        if(this.title.equals("")) this.title = null;
+        if(this.remoteOj == null || this.remoteOj.equals("")) this.remoteOj = null;
+        if(this.remoteProblemId == null || this.remoteProblemId.equals("")) this.remoteProblemId = null;
+        if(this.title == null || this.title.equals("")) this.title = null;
     }
 
     public String getRemoteOj() {

@@ -3,6 +3,7 @@ package top.tosim.actrainer.dao;
 import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,5 +53,18 @@ public class UserDaoTest {
 //        userDao.insertSelective(user);
 //        1511618250000
 //        1511618065170
+    }
+
+    @Test
+    public void teet(){
+        User user = userDao.selectByAccountNameAndPass("Fireman","056210");
+        System.out.println(JSON.toJSONString(user));
+        UserPageSelectDto pageSelectDto = new UserPageSelectDto();
+        pageSelectDto.validateAndCalculateStart(10);
+        Integer cnt = userDao.selectTotalCount(pageSelectDto);
+        System.out.println(JSON.toJSONString(userDao.selectPartByPage(pageSelectDto)));
+//        userDao.updateAcOrFailCount(1,-1);
+//        userDao.updateIconByPrimaryKey(1,"aass");
+//        userDao.selectByAccountName("Fireman");
     }
 }

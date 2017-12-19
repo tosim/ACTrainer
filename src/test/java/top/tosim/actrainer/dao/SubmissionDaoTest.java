@@ -31,4 +31,8 @@ public class SubmissionDaoTest {
 //        System.out.println(submissionDao.selectTotalCount(pageSelectDto));
         System.out.println(JSON.toJSONString(submissionDao.selectPartByPage(pageSelectDto)));
     }
+    @Test
+    public void testRank(){
+        System.out.println(JSON.toJSONString(submissionDao.selectByContestId(3)));
+    }
 }

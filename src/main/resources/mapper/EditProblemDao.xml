@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.tosim.actrainer.dao.ProblemDao">
-
+<mapper namespace="top.tosim.actrainer.dao.EditProblemDao">
   <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.Problem">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
@@ -17,119 +16,38 @@
     <result column="sample_output" jdbcType="VARCHAR" property="sampleOutput" />
     <result column="hint" jdbcType="VARCHAR" property="hint" />
     <result column="author" jdbcType="VARCHAR" property="author" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
   </resultMap>
-  <resultMap id="PartResultMap" type="java.util.HashMap">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
-    <result column="remote_problem_id" jdbcType="VARCHAR" property="remoteProblemId" />
-    <result column="url" jdbcType="VARCHAR" property="url" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-  </resultMap>
-  <sql id="Part_Column_List">
-    problem.id, problem.remote_oj, problem.remote_problem_id, problem.url, problem.title
-  </sql>
   <sql id="Base_Column_List">
     id, remote_oj, remote_problem_id, url, title, time_limit, memory_limit, description, 
-    input, output, sample_input, sample_output, hint, author ,source
+    input, output, sample_input, sample_output, hint, author, source
   </sql>
-
-  <!--<select id="selectPartByContestId" parameterType="java.lang.Integer" resultMap="PartResultMap">-->
-    <!--select <include refid="Part_Column_List"/>-->
-    <!--from contest_problem,problem-->
-    <!--where contest_problem.contest_id = #{contestId}-->
-    <!--and problem.remote_problem_id = contest_problem.remote_problem_id-->
-  <!--</select>-->
-  <!--<select id="selectPartByPage" parameterType="top.tosim.actrainer.dto.ProblemPageSelectDto" resultMap="PartResultMap">-->
-    <!--select-->
-    <!--<include refid="Part_Column_List" />-->
-    <!--from problem-->
-    <!--<where>-->
-      <!--<if test="remoteOj!=null">-->
-        <!--and remote_oj = #{remoteOj}-->
-      <!--</if>-->
-      <!--<if test="remoteProblemId!=null">-->
-        <!--and remote_problem_id = #{remoteProblemId}-->
-      <!--</if>-->
-      <!--<if test="title!=null">-->
-        <!--and title like '%${title}%'-->
-      <!--</if>-->
-    <!--</where>-->
-    <!--order by id-->
-    <!--limit #{start},#{size}-->
-  <!--</select>-->
-  <!--<select id="selectByOjAndPid" resultMap="BaseResultMap">-->
-    <!--select-->
-    <!--<include refid="Base_Column_List" />-->
-    <!--from problem-->
-    <!--where remote_oj = #{arg0}-->
-    <!--and remote_problem_id = #{arg1}-->
-  <!--</select>-->
-  <!--<update id="updateByRemoteOjAndProblemId" parameterType="top.tosim.actrainer.entity.Problem">-->
-    <!--update problem-->
-    <!--<set>-->
-      <!--<if test="url != null">-->
-        <!--url = #{url,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="title != null">-->
-        <!--title = #{title,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="timeLimit != null">-->
-        <!--time_limit = #{timeLimit,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="memoryLimit != null">-->
-        <!--memory_limit = #{memoryLimit,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="description != null">-->
-        <!--description = #{description,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="input != null">-->
-        <!--input = #{input,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="output != null">-->
-        <!--output = #{output,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="sampleInput != null">-->
-        <!--sample_input = #{sampleInput,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="sampleOutput != null">-->
-        <!--sample_output = #{sampleOutput,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="hint != null">-->
-        <!--hint = #{hint,jdbcType=VARCHAR},-->
-      <!--</if>-->
-      <!--<if test="author != null">-->
-        <!--author = #{author,jdbcType=VARCHAR},-->
-      <!--</if>-->
-    <!--</set>-->
-    <!--where remote_oj = #{remoteOj,jdbcType=VARCHAR}-->
-    <!--and remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR}-->
-  <!--</update>-->
-
-
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
+    select 
     <include refid="Base_Column_List" />
-    from problem
+    from edited_problem
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from problem
+    delete from edited_problem
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="top.tosim.actrainer.entity.Problem">
-    insert into problem (id, remote_oj, remote_problem_id,
-    url, title, time_limit,
-    memory_limit, description, input,
-    output, sample_input, sample_output,
-    hint, author)
-    values (#{id,jdbcType=INTEGER}, #{remoteOj,jdbcType=VARCHAR}, #{remoteProblemId,jdbcType=VARCHAR},
-    #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{timeLimit,jdbcType=VARCHAR},
-    #{memoryLimit,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{input,jdbcType=VARCHAR},
-    #{output,jdbcType=VARCHAR}, #{sampleInput,jdbcType=VARCHAR}, #{sampleOutput,jdbcType=VARCHAR},
-    #{hint,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR})
+    insert into edited_problem (id, remote_oj, remote_problem_id, 
+      url, title, time_limit, 
+      memory_limit, description, input, 
+      output, sample_input, sample_output, 
+      hint, author, source
+      )
+    values (#{id,jdbcType=INTEGER}, #{remoteOj,jdbcType=VARCHAR}, #{remoteProblemId,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{timeLimit,jdbcType=VARCHAR}, 
+      #{memoryLimit,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{input,jdbcType=VARCHAR}, 
+      #{output,jdbcType=VARCHAR}, #{sampleInput,jdbcType=VARCHAR}, #{sampleOutput,jdbcType=VARCHAR}, 
+      #{hint,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="top.tosim.actrainer.entity.Problem">
-    insert into problem
+    insert into edited_problem
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -172,6 +90,9 @@
       </if>
       <if test="author != null">
         author,
+      </if>
+      <if test="source != null">
+        source,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -217,10 +138,13 @@
       <if test="author != null">
         #{author,jdbcType=VARCHAR},
       </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="top.tosim.actrainer.entity.Problem">
-    update problem
+    update edited_problem
     <set>
       <if test="remoteOj != null">
         remote_oj = #{remoteOj,jdbcType=VARCHAR},
@@ -261,24 +185,28 @@
       <if test="author != null">
         author = #{author,jdbcType=VARCHAR},
       </if>
+      <if test="source != null">
+        source = #{source,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="top.tosim.actrainer.entity.Problem">
-    update problem
+    update edited_problem
     set remote_oj = #{remoteOj,jdbcType=VARCHAR},
-    remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR},
-    url = #{url,jdbcType=VARCHAR},
-    title = #{title,jdbcType=VARCHAR},
-    time_limit = #{timeLimit,jdbcType=VARCHAR},
-    memory_limit = #{memoryLimit,jdbcType=VARCHAR},
-    description = #{description,jdbcType=VARCHAR},
-    input = #{input,jdbcType=VARCHAR},
-    output = #{output,jdbcType=VARCHAR},
-    sample_input = #{sampleInput,jdbcType=VARCHAR},
-    sample_output = #{sampleOutput,jdbcType=VARCHAR},
-    hint = #{hint,jdbcType=VARCHAR},
-    author = #{author,jdbcType=VARCHAR}
+      remote_problem_id = #{remoteProblemId,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      time_limit = #{timeLimit,jdbcType=VARCHAR},
+      memory_limit = #{memoryLimit,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      input = #{input,jdbcType=VARCHAR},
+      output = #{output,jdbcType=VARCHAR},
+      sample_input = #{sampleInput,jdbcType=VARCHAR},
+      sample_output = #{sampleOutput,jdbcType=VARCHAR},
+      hint = #{hint,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

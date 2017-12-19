@@ -15,12 +15,13 @@
     <result column="execution_time" jdbcType="INTEGER" property="executionTime" />
     <result column="execution_memory" jdbcType="INTEGER" property="executionMemory" />
     <result column="contest_id" jdbcType="INTEGER" property="contestId" />
+    <result column="index" jdbcType="INTEGER" property="index" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
   </resultMap>
   <sql id="Base_Column_List">
     id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj, 
-    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id, 
+    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,index
     user_id, account_name
   </sql>
 

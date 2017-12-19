@@ -25,7 +25,7 @@
         </javaTypeResolver>
 
         <!-- targetProject:生成PO类的位置 -->
-        <javaModelGenerator targetPackage="top.tosim.actrainer.entity.reentity"
+        <javaModelGenerator targetPackage="top.tosim.actrainer.entity"
                             targetProject="src/main/java">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
@@ -36,14 +36,14 @@
            如果maven工程只是单独的一个工程，targetProject="src/main/java"
            若果maven工程是分模块的工程，targetProject="所属模块的名称"，例如：
            targetProject="ecps-manager-mapper"，下同-->
-        <sqlMapGenerator targetPackage="remapper"
+        <sqlMapGenerator targetPackage="mapper"
                          targetProject="src/main/resources">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
         <!-- targetPackage：mapper接口生成的位置 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="top.tosim.actrainer.dao.redao"
+                             targetPackage="top.tosim.actrainer.dao"
                              targetProject="src/main/java">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
@@ -94,13 +94,28 @@
             <!--&lt;!&ndash;使用与数据库字段相同的属性名&ndash;&gt;-->
             <!--&lt;!&ndash;<property name="useActualColumnNames" value="true"/>&ndash;&gt;-->
         <!--</table>-->
-        <table schema="" tableName="user" domainObjectName="User" mapperName="UserDao"
+        <!--<table schema="" tableName="user" domainObjectName="User" mapperName="UserDao"-->
+               <!--enableCountByExample="false"-->
+               <!--enableUpdateByExample="false"-->
+               <!--enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false"-->
+               <!--selectByExampleQueryId="false">-->
+            <!--<columnOverride column="description" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--&lt;!&ndash;使用与数据库字段相同的属性名&ndash;&gt;-->
+            <!--&lt;!&ndash;<property name="useActualColumnNames" value="true"/>&ndash;&gt;-->
+        <!--</table>-->
+        <table schema="" tableName="edited_problem" domainObjectName="EditedProblem" mapperName="EditProblemDao"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false">
             <columnOverride column="description" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="input" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="output" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="sample_input" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="sample_output" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="hint" javaType="java.lang.String" jdbcType="VARCHAR" />
             <!--使用与数据库字段相同的属性名-->
             <!--<property name="useActualColumnNames" value="true"/>-->
         </table>

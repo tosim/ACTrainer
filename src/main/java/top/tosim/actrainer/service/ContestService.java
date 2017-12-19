@@ -52,26 +52,8 @@ public class ContestService {
     * */
 
     public Map<String,Integer> createContest(HttpServletRequest request,Contest contest){
-        log.info(JSON.toJSONString(contest));
-        User user = (User)request.getSession(true).getAttribute("user");
-        Map<String,Integer> ret = new HashMap<String,Integer>();
-        if(user == null){
-            ret.put("success",0);
-            return ret;
-        }
-        contest.setUserId(user.getId());
-        contestDao.insert(contest);
-        log.info(contest.getId().toString());
-        for(List<Object> problem : contest.getProblemList()){
-            ContestProblem contestProblem = new ContestProblem();
-            contestProblem.setContestId(contest.getId());
-            contestProblem.setRemoteOj((String)problem.get(0));
-            contestProblem.setRemoteProblemId((Integer)problem.get(1));
-            log.info(JSON.toJSONString(contestProblem));
-            contestDao.insertIntoContestProblem(contestProblem);
-        }
-        ret.put("success",1);
-        return ret;
+
+        return null;
     }
 
     /*
@@ -82,29 +64,29 @@ public class ContestService {
     * problemList
     * */
     public Map<String,Integer> updateContestProblem(HttpServletRequest request,int id,Contest contest){
-        log.info(JSON.toJSONString(contest));
-        User user = (User)request.getSession(true).getAttribute("user");
-        Map<String,Integer> ret = new HashMap<String,Integer>();
-        if(user == null){
-            ret.put("success",0);
-            return ret;
-        }
-        int contestId = id;
-        if(contest.getId() == null || id != contest.getId()){
-            ret.put("success",0);
-            return ret;
-        }
-        contestDao.updateByPrimaryKeySelective(contest);
-        for(List<Object> problem : contest.getProblemList()){
-            ContestProblem contestProblem = new ContestProblem();
-            contestProblem.setContestId(contestId);
-            contestProblem.setRemoteOj((String)problem.get(0));
-            contestProblem.setRemoteProblemId((Integer)problem.get(1));
-            log.info(JSON.toJSONString(contestProblem));
-            contestDao.insertIntoContestProblem(contestProblem);
-        }
-        ret.put("success",1);
-        return ret;
+//        log.info(JSON.toJSONString(contest));
+//        User user = (User)request.getSession(true).getAttribute("user");
+//        Map<String,Integer> ret = new HashMap<String,Integer>();
+//        if(user == null){
+//            ret.put("success",0);
+//            return ret;
+//        }
+//        int contestId = id;
+//        if(contest.getId() == null || id != contest.getId()){
+//            ret.put("success",0);
+//            return ret;
+//        }
+//        contestDao.updateByPrimaryKeySelective(contest);
+//        for(List<Object> problem : contest.getProblemList()){
+//            ContestProblem contestProblem = new ContestProblem();
+//            contestProblem.setContestId(contestId);
+//            contestProblem.setRemoteOj((String)problem.get(0));
+//            contestProblem.setRemoteProblemId((Integer)problem.get(1));
+//            log.info(JSON.toJSONString(contestProblem));
+//            contestDao.insertIntoContestProblem(contestProblem);
+//        }
+//        ret.put("success",1);
+        return null;
     }
 
     public Map<String,Integer> modifyProblem(

@@ -15,7 +15,7 @@ import java.util.List;
 
 @Configuration
 @ComponentScan(basePackages = {"top.tosim.actrainer"},excludeFilters = {@Filter(type = FilterType.ANNOTATION,value = EnableWebMvc.class)})//包扫描，排除mvc组件
-//@Import(DataSourceConfig.class)//加载数据源配置
+@Import(DataSourceConfig.class)//加载数据源配置
 public class RootConfig {
     //配置aop自动代理
     /*
