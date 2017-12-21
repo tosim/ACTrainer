@@ -36,13 +36,12 @@ public class OJWorkerInitializer {
         HDU_userNames = Arrays.asList(HDU_userNames.get(0).split(";"));
         HDU_password = Arrays.asList(HDU_password.get(0).split(";"));
 
-//        initSubmitter();
-//        initQuerier();
+        initSubmitter();
+        initQuerier();
     }
 
     public void initSubmitter(){
         //System.out.println("SubmitterInitializer initMethod performed!");
-
         for(int i = 0;i < HDU_userNames.size();i++){
             System.out.println("userName = " + HDU_userNames.get(i) + "  password = " + HDU_password.get(i));
             new Thread(new HDUSubmitter(HDU_userNames.get(i),HDU_password.get(i),submissionDao,userDao)).start();

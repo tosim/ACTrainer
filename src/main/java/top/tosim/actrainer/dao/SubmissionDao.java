@@ -44,7 +44,7 @@ public interface SubmissionDao {
 
     class SubmissionDaoProvider{
         private final String baseColumnList = " id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj, \n" +
-                "    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,index\n" +
+                "    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,`index`\n" +
                 "    user_id, account_name ";
         private final String partColumnList = "     id, submit_time,status,remote_oj,remote_problem_id,execution_time, execution_memory,source,language,account_name\n ";
 
@@ -100,16 +100,19 @@ public interface SubmissionDao {
                 if(pageSelectDto.getStatus() != null){
                     WHERE("status = #{status}");
                 }
-                ORDER_BY("id");
+                WHERE("contest_id is null");
+                ORDER_BY("id desc");
             }}.toString()+" \nLIMIT #{start},#{size}";
         }
         public String selectByOJAndRealRunId(@Param("Oj") String Oj, @Param("realRunId") Integer realRunId){
-            return new SQL(){{
+            String sql = new SQL(){{
                 SELECT(baseColumnList);
                 FROM("submission");
                 WHERE("remote_oj = #{Oj}");
                 WHERE("real_run_id = #{realRunId}");
             }}.toString();
+            System.out.println(sql);
+            return sql;
         }
 
     }

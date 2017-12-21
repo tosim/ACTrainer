@@ -3,7 +3,7 @@
 <mapper namespace="top.tosim.actrainer.dao.SubmissionDao">
   <sql id="Base_Column_List">
     id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj,
-    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,index
+    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,`index`
     user_id, account_name
   </sql>
   <sql id="Part_Column_List">
@@ -114,6 +114,9 @@
       <if test="accountName != null">
         account_name,
       </if>
+      <if test="index != null">
+        `index`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -161,6 +164,9 @@
       <if test="accountName != null">
         #{accountName,jdbcType=VARCHAR},
       </if>
+      <if test="index != null">
+        #{index,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="top.tosim.actrainer.entity.Submission">
@@ -207,6 +213,9 @@
       </if>
       <if test="accountName != null">
         account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="index != null">
+        `index` = #{index},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import top.tosim.actrainer.config.RootConfig;
+import top.tosim.actrainer.controller.ExcelsController;
 import top.tosim.actrainer.dto.UserPageSelectDto;
 import top.tosim.actrainer.entity.User;
 
@@ -18,6 +19,8 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {RootConfig.class})
 public class UserDaoTest {
+    @Autowired
+    ExcelsController excelsController;
     @Autowired
     UserDao userDao;
     @Test
@@ -66,5 +69,12 @@ public class UserDaoTest {
 //        userDao.updateAcOrFailCount(1,-1);
 //        userDao.updateIconByPrimaryKey(1,"aass");
 //        userDao.selectByAccountName("Fireman");
+    }
+    @Test
+    public void tedet(){
+//        excelsController.getRank(3);
+//        char a = (char)65;
+//        System.out.println(String.valueOf(a));
+
     }
 }

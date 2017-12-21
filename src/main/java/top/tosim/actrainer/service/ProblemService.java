@@ -23,7 +23,6 @@ public class ProblemService {
 
     public Problem getProblem(String remoteOj,String id){
         log.info("pid = " + id);
-//        Problem problem = HDUCrawler.crawl(id);
         Problem problem = problemDao.selectByOjAndPid(RemoteOJ.HDU.name(),id);
         log.info(JSON.toJSONString(problem));
         return problem;
@@ -31,7 +30,6 @@ public class ProblemService {
 
     public List<Map<String,Object>> getProblemList(ProblemPageSelectDto pageSelectDto){
         pageSelectDto.validateAndCalculateStart(10);
-//        log.info(JSON.toJSONString(pageSelectDto));
         List<Map<String,Object>> ret = problemDao.selectPartByPage(pageSelectDto);
         log.info(JSON.toJSONString(ret));
         return ret;

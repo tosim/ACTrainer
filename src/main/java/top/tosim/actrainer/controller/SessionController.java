@@ -40,35 +40,12 @@ public class SessionController {
     @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,User> login(HttpServletRequest request, @RequestBody User requestUser){
-        /*log.info(JSON.toJSONString(requestUser));
-        log.info("accountNam = " + requestUser.getAccountName() + " and password = " + requestUser.getPassword());
-        Map<String,User> ret = new HashMap<String, User>();
-        HttpSession session = request.getSession(true);
-        if(session.getAttribute("user") != null){
-            ret.put("user",(User)session.getAttribute("user"));
-            return ret;
-        }
-        User user = userDao.selectByAccountNameAndPass(requestUser.getAccountName(),requestUser.getPassword());
-        if(user != null){
-            user.setPassword(null);
-            ret.put("user",user);
-            request.getSession(true).setAttribute("user",user);
-        }else{
-            ret.put("user",null);
-        }
-        return ret;*/
         return sessionService.login(request,requestUser);
     }
 
-    @RequestMapping(value = "",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/logout",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Integer> logout(HttpServletRequest request){
-        /*log.info("get delete request");
-        Map<String,Integer> ret = new HashMap<String, Integer>();
-        HttpSession session = request.getSession(true);
-        session.removeAttribute("user");
-        ret.put("success",1);
-        return ret;*/
         return sessionService.logout(request);
     }
 }

@@ -6,16 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import top.tosim.actrainer.dao.ContestDao;
-import top.tosim.actrainer.dao.EditProblemDao;
-import top.tosim.actrainer.dao.UserDao;
+import top.tosim.actrainer.dao.*;
 import top.tosim.actrainer.dto.ContestPageSelectDto;
-import top.tosim.actrainer.entity.Contest;
-import top.tosim.actrainer.entity.ContestProblem;
-import top.tosim.actrainer.entity.Problem;
-import top.tosim.actrainer.entity.User;
+import top.tosim.actrainer.dto.RespJson;
+import top.tosim.actrainer.entity.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +20,16 @@ import java.util.Map;
 @Service
 public class ContestService {
     Logger log = LoggerFactory.getLogger(ContestService.class);
-
     @Autowired
     ContestDao contestDao;
     @Autowired
     UserDao userDao;
     @Autowired
     EditProblemDao editProblemDao;
+    @Autowired
+    ProblemDao problemDao;
+    @Autowired
+    SubmissionDao submissionDao;
 
     public Map<String,Integer> getContestTotalCount(ContestPageSelectDto pageSelectDto){
         Map<String,Integer> totalCount = new HashMap<String, Integer>();
@@ -37,113 +37,165 @@ public class ContestService {
         return totalCount;
     }
 
-
-    public List<Contest> getContestList(ContestPageSelectDto pageSelectDto){
+    public RespJson getContestList(ContestPageSelectDto pageSelectDto){
+        RespJson respJson = new RespJson();
         pageSelectDto.validateAndCalculateStart(15);
         List<Contest> ret = contestDao.selectPartByPage(pageSelectDto);
-        log.info(JSON.toJSONString(ret));
-        return ret;
-    }
-    /*
-    * 创建一场比赛，不涉及题目描述的修改
-    * {
-	        "title":"testjson",
-	        "startTime":1511618065170,
-	        "duration":360000,
-	        "problemList":[["HDU",1000],["POJ",2000]]
-        }
-    * */
-
-    public Map<String,Integer> createContest(HttpServletRequest request,Contest contest){
-
-        return null;
+        respJson.setObj(ret);
+        respJson.setSuccess(1);
+        return respJson;
     }
 
-    /*
-    * 修改比赛的基本信息
-    * title
-    * startTime
-    * duration
-    * problemList
-    * */
-    public Map<String,Integer> updateContestProblem(HttpServletRequest request,int id,Contest contest){
-//        log.info(JSON.toJSONString(contest));
-//        User user = (User)request.getSession(true).getAttribute("user");
-//        Map<String,Integer> ret = new HashMap<String,Integer>();
-//        if(user == null){
-//            ret.put("success",0);
-//            return ret;
-//        }
-//        int contestId = id;
-//        if(contest.getId() == null || id != contest.getId()){
-//            ret.put("success",0);
-//            return ret;
-//        }
-//        contestDao.updateByPrimaryKeySelective(contest);
-//        for(List<Object> problem : contest.getProblemList()){
-//            ContestProblem contestProblem = new ContestProblem();
-//            contestProblem.setContestId(contestId);
-//            contestProblem.setRemoteOj((String)problem.get(0));
-//            contestProblem.setRemoteProblemId((Integer)problem.get(1));
-//            log.info(JSON.toJSONString(contestProblem));
-//            contestDao.insertIntoContestProblem(contestProblem);
-//        }
-//        ret.put("success",1);
-        return null;
-    }
-
-    public Map<String,Integer> modifyProblem(
-            HttpServletRequest request,
-            @PathVariable("id") int id,
-            @PathVariable("remoteOj") String remoteOj,
-            @PathVariable("remoteProblemId") String remoteProblemId,
-            @RequestBody Problem problem){
-        log.info("contestId = " + id + " and remoteOj = " + remoteOj + " and remoteProblemId = " + remoteProblemId);
-        log.info("put problem info = " + JSON.toJSONString(problem));
-        request.getSession(true).setAttribute("user",userDao.selectByPrimaryKey(2));
-
+    public RespJson updateContest(HttpServletRequest request,int id,Contest contest){
+        RespJson respJson = new RespJson();
         User user = (User)request.getSession(true).getAttribute("user");
-        Map<String,Integer> ret = new HashMap<String,Integer>();
-        if(user == null || problem.getRemoteOj() == null || problem.getRemoteProblemId() == null){
-            if(user == null) log.info("user is null");
-            else log.info("oj or id is null");
-            ret.put("success",0);
-            return ret;
+        if(user == null || !(user.getId().equals(contest.getUserId())) ){
+            respJson.setSuccess(0);
+            respJson.setMsg("not login or not own this contest");
+            return respJson;
         }
-        if(!problem.getRemoteOj().equals(remoteOj) || !problem.getRemoteProblemId().equals(remoteProblemId)){
-            log.info("oj or id not match");
-            ret.put("success",0);
-            return ret;
+        int contestId = id;
+        contest.setId(contestId);
+        contestDao.updateByPrimaryKeySelective(contest);
+        List<ContestProblem> contestProblemList = contestDao.selectRowsByContestId(contest.getId());
+        for(ContestProblem cp :contestProblemList){
+            if(cp.getEditedProblemId() != null){
+                editProblemDao.deleteByPrimaryKey(cp.getEditedProblemId());
+            }
         }
-        //如果数据库中没有这个比赛，不予与更新
-        Contest contest = contestDao.selectByPrimaryKey(id);
-        if(contest == null){
-            log.info("no such contest");
-            ret.put("success",0);
-            return ret;
+        contestDao.deleteContestProblemByCid(contestId);
+        for(int ix = 0;ix < contest.getContainProblems().size();ix++){
+            Problem problem = contest.getContainProblems().get(ix);
+            ContestProblem contestProblem = new ContestProblem();
+            contestProblem.setContestId(contest.getId());
+            contestProblem.setRemoteOj(problem.getRemoteOj());
+            contestProblem.setRemoteProblemId(Integer.parseInt(problem.getRemoteProblemId()));
+            if(problem.getIsEdited() != null && problem.getIsEdited().equals(1)){
+                problem.setId(null);
+                editProblemDao.insertSelective(problem);
+                contestProblem.setEditedProblemId(problem.getId());
+            }
+            contestProblem.setIndex(ix);
+            contestDao.insertIntoContestProblem(contestProblem);
         }
-        //如果数据库中这个比赛中没有这道题目，也不予以更新
-        if(contestDao.selectProblemFromContestProblem(contest.getId(),remoteOj,remoteProblemId) == 0){
-            log.info("no such problem");
-            ret.put("success",0);
-            return ret;
-        }
-
-        log.info("has this contest(id=" + contest.getId() + ") and has this problem " + problem.getRemoteOj() + "," + problem.getRemoteProblemId());
-        //数据库中有这个比赛，这个比赛中有这道题目
-
-        //如果这个问题没有自定义编辑过，向edited_problem 插入更新后的问题，并更新contest_problem 对应字段
-        Integer editProblemId = contestDao.selectEditIdFromContestProblem(contest.getId(),remoteOj,remoteProblemId);
-        if(editProblemId == null){
-            log.info("this problem has not edited");
-            editProblemDao.insertSelective(problem);//插入到edited_problem 获取到在edited_problem的id
-            contestDao.updateContestProblemForEdit(contest.getId(),remoteOj,remoteProblemId,problem.getId());//更新edited_problem_id字段为上面插入的字段
-        }else{
-            log.info("this problem has been edited");
-            problem.setId(editProblemId);
-            editProblemDao.updateByPrimaryKeySelective(problem);
-        }
-        ret.put("success",1);
-        return ret;
+        respJson.setSuccess(1);
+        return respJson;
     }
+
+    public RespJson createContest(HttpServletRequest request, Contest contest){
+        RespJson respJson = new RespJson();
+        User user = (User)request.getSession(true).getAttribute("user");
+        if(user == null){
+            respJson.setSuccess(0);
+            return respJson;
+        }
+        if(contest.getPassword().trim().equals("")) contest.setPassword(null);
+
+        contest.setUserId(user.getId());
+        contestDao.insertSelective(contest);
+        for(int ix = 0;ix < contest.getContainProblems().size();ix++){
+            Problem problem = contest.getContainProblems().get(ix);
+            ContestProblem contestProblem = new ContestProblem();
+            contestProblem.setContestId(contest.getId());
+            contestProblem.setRemoteOj(problem.getRemoteOj());
+            contestProblem.setRemoteProblemId(Integer.parseInt(problem.getRemoteProblemId()));
+            if(problem.getIsEdited() != null && problem.getIsEdited().equals(1)){
+                //editedId = insert to editProblems
+                problem.setId(null);
+                editProblemDao.insertSelective(problem);
+                contestProblem.setEditedProblemId(problem.getId());
+            }
+            log.info(JSON.toJSONString(contestProblem));
+            contestProblem.setIndex(ix);
+            contestDao.insertIntoContestProblem(contestProblem);
+        }
+        respJson.setSuccess(1);
+        return respJson;
+    }
+
+    public RespJson getContestProblem(HttpServletRequest request,Integer id, String remoteOj, Integer remoteProblemId,String password){
+        RespJson respJson = new RespJson();
+        Contest contest = contestDao.selectByPrimaryKey(id);
+        User user = (User)request.getSession(true).getAttribute("user");
+        if(contest.getContestType().equals(1)){
+            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
+                if(user == null || !user.getId().equals(contest.getUserId())){
+                    respJson.setSuccess(0);
+                    return respJson;
+                }
+            }
+        }
+        ContestProblem contestProblem = contestDao.selectRow(id,remoteOj,remoteProblemId);
+        if(contestProblem.getEditedProblemId() == null){
+            respJson.setObj(problemDao.selectByOjAndPid(remoteOj,remoteProblemId+""));
+        }else{
+            respJson.setObj(editProblemDao.selectByPrimaryKey(contestProblem.getEditedProblemId()));
+        }
+        respJson.setSuccess(1);
+        return respJson;
+    }
+
+    public RespJson getContestProblemList(HttpServletRequest request,@PathVariable("id") Integer id,String password){
+        RespJson respJson = new RespJson();
+        Contest contest = contestDao.selectByPrimaryKey(id);
+        User user = (User)request.getSession(true).getAttribute("user");
+        if(contest.getContestType().equals(1)){
+            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
+                if(user == null || !user.getId().equals(contest.getUserId())){
+                    respJson.setSuccess(0);
+                    return respJson;
+                }
+            }
+        }
+
+        List<Problem> containProblems = new ArrayList<Problem>();
+
+        List<ContestProblem> contestProblemList = contestDao.selectRowsByContestId(contest.getId());
+        for(ContestProblem contestProblem: contestProblemList) {
+            if (contestProblem.getEditedProblemId() != null) {
+                Problem editedProblem = editProblemDao.selectByPrimaryKey(contestProblem.getEditedProblemId());
+                editedProblem.setIsEdited(1);
+                containProblems.add(editedProblem);
+            } else {
+                Problem problem = problemDao.selectByOjAndPid(contestProblem.getRemoteOj(), contestProblem.getRemoteProblemId() + "");
+                problem.setIsEdited(0);
+                containProblems.add(problem);
+            }
+        }
+        contest.setContainProblems(containProblems);
+        respJson.setSuccess(1);
+        respJson.setObj(contest);
+        return respJson;
+    }
+
+    public RespJson getContestRank(int id){
+        RespJson respJson = new RespJson();
+        Contest contest = contestDao.selectByPrimaryKey(id);
+        List<Submission> submissionList = submissionDao.selectByContestId(id);
+        Map<Integer,String> parts = new HashMap<Integer, String>();
+        List<List> submit = new ArrayList();
+        for(Submission submission:submissionList){
+            List sub = new ArrayList();
+            sub.add(submission.getUserId());
+            sub.add(submission.getIndex());
+            sub.add(submission.getStatus().equals("AC")?1:0);
+            sub.add(submission.getSubmitTime().getTime() - contest.getStartTime());
+            if(!parts.containsKey(submission.getUserId())){
+                User u = userDao.selectByPrimaryKey(submission.getUserId());
+                parts.put(submission.getUserId(),u.getAccountName());
+            }
+            submit.add(sub);
+        }
+        Map<String,Object> res = new HashMap<String,Object>();
+        res.put("parts",parts);
+        res.put("submit",submit);
+        res.put("length",contest.getDuration());
+        List<ContestProblem> contestProblemList = contestDao.selectRowsByContestId(contest.getId());
+
+        res.put("number",contestProblemList.size());
+        respJson.setSuccess(1);
+        respJson.setObj(res);
+        return respJson;
+    }
+
 }

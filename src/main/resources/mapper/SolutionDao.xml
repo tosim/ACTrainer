@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.tosim.actrainer.dao.SolutionDao">
+  <sql id="Base_Column_List">
+    id, title, remote_oj, remote_problem_id, user_id, content, create_time
+  </sql>
+  <sql id="Part_Column_List">
+    id, title, user_id, create_time
+  </sql>
+  <resultMap id="BaseResultMap" type="top.tosim.actrainer.entity.Solution">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="remote_oj" jdbcType="VARCHAR" property="remoteOj" />
+    <result column="remote_problem_id" jdbcType="INTEGER" property="remoteProblemId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <resultMap id="PartResultMap" type="java.util.HashMap">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from solution
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from solution
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="top.tosim.actrainer.entity.Solution">
+    insert into solution (id, title, remote_oj, 
+      remote_problem_id, user_id, content, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{remoteOj,jdbcType=VARCHAR}, 
+      #{remoteProblemId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="top.tosim.actrainer.entity.Solution">
+    insert into solution
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="remoteOj != null">
+        remote_oj,
+      </if>
+      <if test="remoteProblemId != null">
+        remote_problem_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteOj != null">
+        #{remoteOj,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteProblemId != null">
+        #{remoteProblemId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="top.tosim.actrainer.entity.Solution">
+    update solution
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteOj != null">
+        remote_oj = #{remoteOj,jdbcType=VARCHAR},
+      </if>
+      <if test="remoteProblemId != null">
+        remote_problem_id = #{remoteProblemId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="top.tosim.actrainer.entity.Solution">
+    update solution
+    set title = #{title,jdbcType=VARCHAR},
+      remote_oj = #{remoteOj,jdbcType=VARCHAR},
+      remote_problem_id = #{remoteProblemId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

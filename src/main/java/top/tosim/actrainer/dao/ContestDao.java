@@ -31,7 +31,7 @@ public interface ContestDao {
     @Select("select count(*) from contest_problem where contest_id = #{contestId} and remote_oj = #{remoteOj} and remote_problem_id = #{remoteProblemId}")
     Integer selectProblemFromContestProblem(@Param("contestId") Integer contestId,@Param("remoteOj") String remoteOj, @Param("remoteProblemId") String remoteProblemId);
 
-    @Select("select * from contest_problem where contest_id = #{contestId}")
+    @Select("select * from contest_problem where contest_id = #{contestId} order by `index`")
     @ResultMap("ContestProblem")
     List<ContestProblem> selectRowsByContestId(Integer contestId);
 
@@ -63,7 +63,7 @@ public interface ContestDao {
                     VALUES("contest_id",contestProblem.getContestId()+"");
                 }
                 if(contestProblem.getRemoteOj() != null){
-                    VALUES("remote_oj",contestProblem.getRemoteOj());
+                    VALUES("remote_oj","'" + contestProblem.getRemoteOj() + "'");
                 }
                 if(contestProblem.getRemoteProblemId() != null){
                     VALUES("remote_problem_id",contestProblem.getRemoteProblemId()+"");
@@ -72,7 +72,7 @@ public interface ContestDao {
                     VALUES("edited_problem_id",contestProblem.getEditedProblemId()+"");
                 }
                 if(contestProblem.getIndex() != null){
-                    VALUES("index",contestProblem.getIndex()+"");
+                    VALUES("`index`",contestProblem.getIndex()+"");
                 }
             }}.toString();
         }
@@ -87,21 +87,23 @@ public interface ContestDao {
                 if(pageSelectDto.getAccountName() != null){
                     WHERE("user.account_name = #{accountName}");
                 }
-                if(pageSelectDto.getStatus().equals("Pending")){
-                    WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
-                }
-                if(pageSelectDto.getStatus().equals("Runing")){
-                    WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
-                    WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
-                }
-                if(pageSelectDto.getStatus().equals("Ended")){
-                    WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                if(pageSelectDto.getStatus() != null){
+                    if(pageSelectDto.getStatus().equals("Pending")){
+                        WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
+                    }
+                    if(pageSelectDto.getStatus().equals("Runing")){
+                        WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
+                        WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
+                    }
+                    if(pageSelectDto.getStatus().equals("Ended")){
+                        WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                    }
                 }
                 if(pageSelectDto.getContestType() != null){
                     WHERE("contest_type = #{contestType}");
                 }
                 ORDER_BY("contest.id desc");
-            }}.toString();
+            }}.toString() + " \nLIMIT #{start},#{size}";
         }
         public String selectTotalCount(ContestPageSelectDto pageSelectDto){
             return new SQL(){{

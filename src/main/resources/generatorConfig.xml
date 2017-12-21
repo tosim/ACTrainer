@@ -50,6 +50,16 @@
         </javaClientGenerator>
 
         <!-- 指定数据库表 -->
+        <table schema="actrainer" tableName="solution" domainObjectName="Solution" mapperName="SolutionDao"
+        enableCountByExample="false"
+        enableUpdateByExample="false"
+        enableDeleteByExample="false"
+        enableSelectByExample="false"
+        selectByExampleQueryId="false">
+        <columnOverride column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <!--使用与数据库字段相同的属性名-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        </table>
         <!--<table schema="actrainer" tableName="contest" domainObjectName="Contest" mapperName="ContestDao"-->
         <!--enableCountByExample="false"-->
         <!--enableUpdateByExample="false"-->
@@ -104,20 +114,20 @@
             <!--&lt;!&ndash;使用与数据库字段相同的属性名&ndash;&gt;-->
             <!--&lt;!&ndash;<property name="useActualColumnNames" value="true"/>&ndash;&gt;-->
         <!--</table>-->
-        <table schema="" tableName="edited_problem" domainObjectName="EditedProblem" mapperName="EditProblemDao"
-               enableCountByExample="false"
-               enableUpdateByExample="false"
-               enableDeleteByExample="false"
-               enableSelectByExample="false"
-               selectByExampleQueryId="false">
-            <columnOverride column="description" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="input" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="output" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="sample_input" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="sample_output" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="hint" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <!--使用与数据库字段相同的属性名-->
-            <!--<property name="useActualColumnNames" value="true"/>-->
-        </table>
+        <!--<table schema="" tableName="edited_problem" domainObjectName="EditedProblem" mapperName="EditProblemDao"-->
+               <!--enableCountByExample="false"-->
+               <!--enableUpdateByExample="false"-->
+               <!--enableDeleteByExample="false"-->
+               <!--enableSelectByExample="false"-->
+               <!--selectByExampleQueryId="false">-->
+            <!--<columnOverride column="description" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--<columnOverride column="input" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--<columnOverride column="output" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--<columnOverride column="sample_input" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--<columnOverride column="sample_output" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--<columnOverride column="hint" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+            <!--&lt;!&ndash;使用与数据库字段相同的属性名&ndash;&gt;-->
+            <!--&lt;!&ndash;<property name="useActualColumnNames" value="true"/>&ndash;&gt;-->
+        <!--</table>-->
     </context>
 </generatorConfiguration>

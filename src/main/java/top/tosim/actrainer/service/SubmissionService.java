@@ -42,11 +42,8 @@ public class SubmissionService {
         return totalCount;
     }
 
-    /*
-    *处理提交
-    * */
     public Map<String,Integer> doSubmit(HttpServletRequest request,Submission submission){
-        User user = (User)request.getSession(false).getAttribute("user");
+        User user = (User)request.getSession(true).getAttribute("user");
         Map<String,Integer> ret = new HashMap<String,Integer>();
         if(user == null){
             ret.put("success",0);
