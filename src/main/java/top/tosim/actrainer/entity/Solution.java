@@ -13,5 +13,5 @@ public class Solution {
     private Integer userId;
     private String content;
     private Date createTime;
-
+    private String author;
 }

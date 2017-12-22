@@ -174,4 +174,8 @@
       description = #{description,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <!--<select id="selectNameByUserId" resultType="java.lang.String">-->
+    <!--select account_name from user where id = #{uid}-->
+  <!--</select>-->
 </mapper>

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,10 +19,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class SessionService {
     Logger log = LoggerFactory.getLogger(SessionService.class);
     @Autowired
     UserDao userDao;
+
+    public Map<String,Integer> checkExpire(HttpServletRequest request){
+        Map<String,Integer> ret = new HashMap<String,Integer>();
+        log.info(JSON.toJSONString(request.getSession(true).getAttribute("user")));
+        if(request.getSession(true).getAttribute("user") == null) ret.put("success",0);
+        else ret.put("success",1);
+        return ret;
+    }
 
     public Map<String,User> login(HttpServletRequest request,User requestUser){
         log.info(JSON.toJSONString(requestUser));

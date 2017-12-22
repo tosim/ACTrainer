@@ -6,14 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import top.tosim.actrainer.dao.UserDao;
 import top.tosim.actrainer.dto.RespJson;
 import top.tosim.actrainer.dto.UserPageSelectDto;
 import top.tosim.actrainer.entity.User;
 import top.tosim.actrainer.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +19,7 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     Logger log = LoggerFactory.getLogger(UserController.class);
-//    @Autowired
-//    UserDao userDao;
+
     @Autowired
     UserService userService;
 
@@ -44,7 +41,7 @@ public class UserController {
         return userService.getUserById(request,id);
     }
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
     public RespJson updateUserById(HttpServletRequest request, @PathVariable("id") int id, @RequestBody User putUser){
         log.info("resive put user id = " + id);

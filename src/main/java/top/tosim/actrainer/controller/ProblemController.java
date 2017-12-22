@@ -1,22 +1,14 @@
 package top.tosim.actrainer.controller;
 
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import top.tosim.actrainer.config.init.SubmissionManager;
-import top.tosim.actrainer.dao.ProblemDao;
-import top.tosim.actrainer.dao.SubmissionDao;
 import top.tosim.actrainer.dto.ProblemPageSelectDto;
-import top.tosim.actrainer.entity.Submission;
-import top.tosim.actrainer.remote.RemoteOJ;
 import top.tosim.actrainer.entity.Problem;
-import top.tosim.actrainer.remote.provider.hdu.HDUCrawler;
 import top.tosim.actrainer.service.ProblemService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

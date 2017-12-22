@@ -13,10 +13,6 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 
-/*
-*用于初始化各个OJ的提交账号的线程
-*
-* */
 @Component
 @PropertySource({"classpath:accounts.properties"})
 public class OJWorkerInitializer {
@@ -41,13 +37,13 @@ public class OJWorkerInitializer {
     }
 
     public void initSubmitter(){
-        //System.out.println("SubmitterInitializer initMethod performed!");
         for(int i = 0;i < HDU_userNames.size();i++){
             System.out.println("userName = " + HDU_userNames.get(i) + "  password = " + HDU_password.get(i));
             new Thread(new HDUSubmitter(HDU_userNames.get(i),HDU_password.get(i),submissionDao,userDao)).start();
             System.out.println("submitter[" + HDU_userNames.get(i) + "] started!");
         }
     }
+
     public void initQuerier(){
         new Thread(new HDUQuerier(submissionDao,userDao)).start();
     }

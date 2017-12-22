@@ -33,6 +33,8 @@ public interface UserDao {
     @Select("SELECT count(*) FROM user WHERE account_name = #{accountName}")
     Integer selectByAccountName(String accountName);
 
+    @Select("select account_name from user where id = #{uid}")
+    String selectNameByUserId(Integer uid);
 
     //
     int updateByPrimaryKeySelective(User record);

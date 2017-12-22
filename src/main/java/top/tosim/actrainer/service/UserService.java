@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.tosim.actrainer.dao.UserDao;
 import top.tosim.actrainer.dto.RespJson;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class UserService {
     Logger log = LoggerFactory.getLogger(UserService.class);
     @Autowired
@@ -73,5 +75,16 @@ public class UserService {
         }
         ret.put("success",1);
         return ret;
+    }
+
+    public void test(){
+        User user = new User();
+        user.setAccountName("test");
+        user.setPassword("123");
+        user.setEmail("123@qq.com");
+        userDao.insertSelective(user);
+        int x = 5 / 0;
+        user.setAccountName("sectest");
+        userDao.insertSelective(user);
     }
 }

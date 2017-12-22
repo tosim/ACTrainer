@@ -1,9 +1,15 @@
 package top.tosim.actrainer.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import top.tosim.actrainer.dao.UserDao;
 import top.tosim.actrainer.dto.PicConfirmData;
 import top.tosim.actrainer.entity.User;
 
@@ -16,11 +22,41 @@ import java.util.Date;
 
 @Service
 @PropertySource({"classpath:global.properties"})
+@Transactional
 public class FileService {
+    Logger log = LoggerFactory.getLogger(FileService.class);
+
+    @Autowired
+    UserDao userDao;
+
     @Value("${pic_save_dir}")
     String picSaveDirs;
 
-    public PicConfirmData save(MultipartFile fileImage, HttpServletRequest request){
+    public  PicConfirmData submitIcon(MultipartFile fileImage, HttpServletRequest request){
+        log.info("收到文件");
+        if(fileImage == null || request.getSession(true).getAttribute("user") == null){
+            if(fileImage == null) log.info("文a件为null");
+            if(request.getSession(true).getAttribute("user") == null) log.info("用户未登录");
+            return new PicConfirmData();
+        }
+        PicConfirmData picConfirmData = save(fileImage,request);
+        User user = (User)request.getSession(true).getAttribute("user");
+        user.setIcon(picConfirmData.getPath());
+        userDao.updateIconByPrimaryKey(user.getId(),user.getIcon());
+        return picConfirmData;
+    }
+
+    public PicConfirmData submitPic(MultipartFile fileImage, HttpServletRequest request){
+        log.info("收到文件");
+        if(fileImage == null || request.getSession(true).getAttribute("user") == null){
+            if(fileImage == null) log.info("文件 = null");
+            if(request.getSession(true).getAttribute("user") == null) log.info("用户未登录");
+            return new PicConfirmData();
+        }
+        return save(fileImage,request);
+    }
+
+    private PicConfirmData save(MultipartFile fileImage, HttpServletRequest request){
         User user = (User)request.getSession(true).getAttribute("user");
         //为图片改名
         String oldName = "";
@@ -63,4 +99,5 @@ public class FileService {
         }
         return pic;
     }
+
 }

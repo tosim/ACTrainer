@@ -15,12 +15,14 @@
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <association property="author" column="user_id" select="top.tosim.actrainer.dao.UserDao.selectNameByUserId" fetchType="eager"/>
   </resultMap>
   <resultMap id="PartResultMap" type="java.util.HashMap">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <association property="author" column="user_id" select="top.tosim.actrainer.dao.UserDao.selectNameByUserId" fetchType="eager"/>
   </resultMap>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

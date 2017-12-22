@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.tosim.actrainer.dao.*;
 import top.tosim.actrainer.dto.ContestPageSelectDto;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class ContestService {
     Logger log = LoggerFactory.getLogger(ContestService.class);
     @Autowired
@@ -117,13 +119,9 @@ public class ContestService {
         RespJson respJson = new RespJson();
         Contest contest = contestDao.selectByPrimaryKey(id);
         User user = (User)request.getSession(true).getAttribute("user");
-        if(contest.getContestType().equals(1)){
-            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
-                if(user == null || !user.getId().equals(contest.getUserId())){
-                    respJson.setSuccess(0);
-                    return respJson;
-                }
-            }
+        if(!checkAuthority(user,contest,password)){
+            respJson.setSuccess(0);
+            return respJson;
         }
         ContestProblem contestProblem = contestDao.selectRow(id,remoteOj,remoteProblemId);
         if(contestProblem.getEditedProblemId() == null){
@@ -139,13 +137,9 @@ public class ContestService {
         RespJson respJson = new RespJson();
         Contest contest = contestDao.selectByPrimaryKey(id);
         User user = (User)request.getSession(true).getAttribute("user");
-        if(contest.getContestType().equals(1)){
-            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
-                if(user == null || !user.getId().equals(contest.getUserId())){
-                    respJson.setSuccess(0);
-                    return respJson;
-                }
-            }
+        if(!checkAuthority(user,contest,password)){
+            respJson.setSuccess(0);
+            return respJson;
         }
 
         List<Problem> containProblems = new ArrayList<Problem>();
@@ -198,4 +192,14 @@ public class ContestService {
         return respJson;
     }
 
+    private boolean checkAuthority(User user,Contest contest,String password){
+        if(contest.getContestType().equals(1)){
+            if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
+                if(user == null || !user.getId().equals(contest.getUserId())){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

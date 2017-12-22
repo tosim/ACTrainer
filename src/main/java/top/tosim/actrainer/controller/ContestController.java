@@ -6,15 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import top.tosim.actrainer.dao.*;
 import top.tosim.actrainer.dto.ContestPageSelectDto;
 import top.tosim.actrainer.dto.RespJson;
 import top.tosim.actrainer.entity.*;
 import top.tosim.actrainer.service.ContestService;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -24,12 +20,6 @@ public class ContestController {
     Logger log = LoggerFactory.getLogger(ContestController.class);
     @Autowired
     ContestService contestService;
-    @Autowired
-    ContestDao contestDao;
-    @Autowired
-    SubmissionDao submissionDao;
-    @Autowired
-    UserDao userDao;
 
     @RequestMapping(value = "/count",method = RequestMethod.GET)
     @ResponseBody

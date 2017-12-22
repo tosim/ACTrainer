@@ -8,9 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.sql.SQLException;
 @Configuration
 @PropertySource("classpath:/jdbc.properties")
 @MapperScan(basePackages="top.tosim.actrainer.dao")
+@EnableTransactionManagement
 public class DataSourceConfig {
 
     private final static Logger log = LoggerFactory.getLogger(DataSourceConfig.class);
@@ -126,14 +130,14 @@ public class DataSourceConfig {
     }
 
     //事务管理
-    /*
+
     @Bean(name = "transactionManager")
     public DataSourceTransactionManager dataSourceTransactionManager(){
         DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
         dataSourceTransactionManager.setDataSource(dataSource());
         return dataSourceTransactionManager;
     }
-
+    /*
     @Bean(name="transactionInterceptor")
     public TransactionInterceptor interceptor(){
         TransactionInterceptor interceptor = new TransactionInterceptor();

@@ -50,13 +50,13 @@
         </javaClientGenerator>
 
         <!-- 指定数据库表 -->
-        <table schema="actrainer" tableName="solution" domainObjectName="Solution" mapperName="SolutionDao"
-        enableCountByExample="false"
-        enableUpdateByExample="false"
-        enableDeleteByExample="false"
-        enableSelectByExample="false"
-        selectByExampleQueryId="false">
-        <columnOverride column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <!--<table schema="actrainer" tableName="solution" domainObjectName="Solution" mapperName="SolutionDao"-->
+        <!--enableCountByExample="false"-->
+        <!--enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false"-->
+        <!--enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<columnOverride column="content" javaType="java.lang.String" jdbcType="VARCHAR" />-->
         <!--使用与数据库字段相同的属性名-->
         <!--<property name="useActualColumnNames" value="true"/>-->
         </table>
