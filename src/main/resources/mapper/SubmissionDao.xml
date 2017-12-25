@@ -40,6 +40,7 @@
     <result column="compilation_error_info" jdbcType="VARCHAR" property="compilationErrorInfo" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="index" jdbcType="INTEGER" property="index" />
   </resultMap>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -111,12 +112,13 @@
       <if test="userId != null">
         user_id,
       </if>
-      <if test="accountName != null">
-        account_name,
-      </if>
       <if test="index != null">
         `index`,
       </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -161,11 +163,11 @@
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
       </if>
-      <if test="accountName != null">
-        #{accountName,jdbcType=VARCHAR},
-      </if>
       <if test="index != null">
         #{index,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

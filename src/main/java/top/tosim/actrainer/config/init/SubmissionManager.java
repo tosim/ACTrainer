@@ -24,6 +24,7 @@ public class SubmissionManager {
 
         runingSubmissionsQueueMap.put(RemoteOJ.HDU,runingSubmissionsQueue_HUD);
     }
+
     public static Submission takeSubmission(RemoteOJ remoteOJ){
         try{
             return submissionsQueueMap.get(remoteOJ).take();
@@ -32,6 +33,7 @@ public class SubmissionManager {
         }
         return null;
     }
+
     public static Submission takeQuerySubmission(RemoteOJ remoteOJ){
         try{
             return runingSubmissionsQueueMap.get(remoteOJ).take();

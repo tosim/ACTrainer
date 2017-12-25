@@ -51,15 +51,11 @@ public class SubmissionService {
             ret.put("success",0);
             return ret;
         }
-        submission.setLanguageCode(LanguageMapManager.getLanguageMap(RemoteOJ.valueOf(submission.getRemoteOj())).get(submission.getLanguage()));
-        log.info("language code = " + submission.getLanguageCode());
         submission.setUserId(user.getId());
         submission.setAccountName(user.getAccountName());
         submission.init();//init languageCode and submitTime and status
         log.info(JSON.toJSONString(submission));
-        int insertNum = submissionDao.insert(submission);
-        log.info("insertNum = " + insertNum);
-        log.info("submissionId = " + submission.getId());
+        int insertNum = submissionDao.insertSelective(submission);
         SubmissionManager.putSubmission(RemoteOJ.HDU,submission); //提交到提交队列等待提交
         ret.put("success",1);
         return ret;

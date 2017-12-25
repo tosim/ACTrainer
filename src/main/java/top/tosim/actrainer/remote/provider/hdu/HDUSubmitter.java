@@ -37,6 +37,7 @@ public class HDUSubmitter implements Submitter,Runnable{
         this.userName = userName;
         this.password = password;
         this.loginCookie = HDUHelper.login(userName,password);
+        this.userDao = userDao;
     }
 
     public Integer submitCode(Submission submission) {

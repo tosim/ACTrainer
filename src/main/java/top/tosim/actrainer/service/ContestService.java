@@ -13,10 +13,7 @@ import top.tosim.actrainer.dto.RespJson;
 import top.tosim.actrainer.entity.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -157,8 +154,11 @@ public class ContestService {
             }
         }
         contest.setContainProblems(containProblems);
+        Map<String,Object> res = new HashMap<String,Object>();
+        res.put("contest",contest);
+        res.put("currentServerTime",new Date().getTime());
         respJson.setSuccess(1);
-        respJson.setObj(contest);
+        respJson.setObj(res);
         return respJson;
     }
 

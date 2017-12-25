@@ -46,7 +46,7 @@ public interface SubmissionDao {
         private final String baseColumnList = " id, submit_time, remote_problem_id, language, source, remote_account_name, remote_oj, \n" +
                 "    status, real_run_id, compilation_error_info, execution_time, execution_memory, contest_id,`index`\n" +
                 "    user_id, account_name ";
-        private final String partColumnList = "     id, submit_time,status,remote_oj,remote_problem_id,execution_time, execution_memory,source,language,account_name\n ";
+        private final String partColumnList = "     id, submit_time,status,remote_oj,remote_problem_id,execution_time, execution_memory,source,language,account_name,`index`\n ";
 
         public String selectTotalCount(SubmissionPageSelectDto pageSelectDto){
             return new SQL(){{
@@ -56,7 +56,10 @@ public interface SubmissionDao {
                     WHERE("id <= #{fromId}");
                 }
                 if(pageSelectDto.getContestId() != null){
-                    WHERE("contes_id = #{contestId}");
+                    WHERE("contest_id = #{contestId}");
+                }
+                else{
+                    WHERE("contest_id is null");
                 }
                 if(pageSelectDto.getRemoteOj() != null){
                     WHERE("remote_oj = #{remoteOj}");
@@ -72,6 +75,9 @@ public interface SubmissionDao {
                 }
                 if(pageSelectDto.getStatus() != null){
                     WHERE("status = #{status}");
+                }
+                if(pageSelectDto.getIndex() != null){
+                    WHERE("`index` = #{index}");
                 }
             }}.toString();
         }
@@ -83,7 +89,10 @@ public interface SubmissionDao {
                     WHERE("id <= #{fromId}");
                 }
                 if(pageSelectDto.getContestId() != null){
-                    WHERE("contes_id = #{contestId}");
+                    WHERE("contest_id = #{contestId}");
+                }
+                else{
+                    WHERE("contest_id is null");
                 }
                 if(pageSelectDto.getRemoteOj() != null){
                     WHERE("remote_oj = #{remoteOj}");
@@ -100,7 +109,9 @@ public interface SubmissionDao {
                 if(pageSelectDto.getStatus() != null){
                     WHERE("status = #{status}");
                 }
-                WHERE("contest_id is null");
+                if(pageSelectDto.getIndex() != null){
+                    WHERE("`index` = #{index}");
+                }
                 ORDER_BY("id desc");
             }}.toString()+" \nLIMIT #{start},#{size}";
         }

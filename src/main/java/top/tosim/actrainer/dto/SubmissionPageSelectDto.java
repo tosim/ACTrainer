@@ -8,6 +8,7 @@ public class SubmissionPageSelectDto extends PageSelectDto{
     private String language;
     private String status;
     private Integer contestId;
+    private Integer index;
 
     @Override
     public void validateAndCalculateStart(Integer defaultSize) {
@@ -18,7 +19,8 @@ public class SubmissionPageSelectDto extends PageSelectDto{
         if(this.accountName == null || this.accountName.equals("")) this.accountName = null;
         if(this.language == null || this.language.equals("")) this.language = null;
         if(this.status == null || this.status.equals("")) this.status = null;
-        if(this.status == null || this.contestId.equals(-1)) this.contestId = null;
+        if(this.contestId == null || this.contestId.equals(-1)) this.contestId = null;
+        if(this.index == null || this.index.equals(-1)) this.index = null;
     }
 
     public Integer getContestId() {
@@ -75,5 +77,13 @@ public class SubmissionPageSelectDto extends PageSelectDto{
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }
