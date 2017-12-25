@@ -130,7 +130,7 @@ public class ContestService {
         return respJson;
     }
 
-    public RespJson getContestProblemList(HttpServletRequest request,@PathVariable("id") Integer id,String password){
+    public RespJson getContestProblemList(HttpServletRequest request,Integer id,String password){
         RespJson respJson = new RespJson();
         Contest contest = contestDao.selectByPrimaryKey(id);
         User user = (User)request.getSession(true).getAttribute("user");
@@ -193,6 +193,12 @@ public class ContestService {
     }
 
     private boolean checkAuthority(User user,Contest contest,String password){
+        if(user !=  null && user.getId().equals(contest.getUserId())){
+            return true;
+        }
+        if(contest.getStartTime() > new Date().getTime()){
+            return false;
+        }
         if(contest.getContestType().equals(1)){
             if(contest.getPassword() == null || password == null || !contest.getPassword().equals(password)) {
                 if(user == null || !user.getId().equals(contest.getUserId())){
