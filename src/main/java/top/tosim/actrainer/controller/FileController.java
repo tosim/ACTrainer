@@ -25,13 +25,13 @@ public class FileController {
     @RequestMapping(value="/icon",method = RequestMethod.POST)
     @ResponseBody
     public PicConfirmData submitIcon(@RequestParam(value = "icon",required = false) MultipartFile fileImage, HttpServletRequest request){
-        return submitIcon(fileImage,request);
+        return fileService.submitIcon(fileImage,request);
     }
 
     @RequestMapping(value="/pic",method = RequestMethod.POST)
     @ResponseBody
     public PicConfirmData submitPic(@RequestParam(value = "pic",required = false) MultipartFile fileImage, HttpServletRequest request){
-        return submitPic(fileImage,request);
+        return fileService.submitPic(fileImage,request);
     }
 }
 

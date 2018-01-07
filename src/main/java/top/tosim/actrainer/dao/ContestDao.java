@@ -82,21 +82,22 @@ public interface ContestDao {
                 FROM("contest,user");
                 WHERE("contest.user_id = user.id");
                 if(pageSelectDto.getTitle() != null){
-                    WHERE("title like '%${title}%'");
+//                    WHERE("title like '%#{title}%'");
+                    WHERE("title like CONCAT('%',#{title},'%' )");
                 }
                 if(pageSelectDto.getAccountName() != null){
                     WHERE("user.account_name = #{accountName}");
                 }
                 if(pageSelectDto.getStatus() != null){
                     if(pageSelectDto.getStatus().equals("Pending")){
-                        WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
+                        WHERE("start_time > UNIX_TIMESTAMP()*1000");
                     }
                     if(pageSelectDto.getStatus().equals("Runing")){
-                        WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
-                        WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
+                        WHERE("start_time < UNIX_TIMESTAMP()*1000");
+                        WHERE("(start_time+duration) > UNIX_TIMESTAMP()*1000");
                     }
                     if(pageSelectDto.getStatus().equals("Ended")){
-                        WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                        WHERE("(start_time+duration) < UNIX_TIMESTAMP()*1000");
                     }
                 }
                 if(pageSelectDto.getContestType() != null){
@@ -106,34 +107,35 @@ public interface ContestDao {
             }}.toString() + " \nLIMIT #{start},#{size}";
         }
         public String selectTotalCount(ContestPageSelectDto pageSelectDto){
-            return new SQL(){{
+            String tmp = new SQL(){{
                 SELECT("count(*)");
                 FROM("contest");
                 if(pageSelectDto.getAccountName() != null){
                     FROM("user");
                 }
                 if(pageSelectDto.getTitle() != null){
-                    WHERE("title like '%${title}%'");
+                    WHERE("title like CONCAT('%',#{title},'%' )");
                 }
                 if(pageSelectDto.getAccountName() != null){
                     WHERE("contest.user_id = user.id");
                     WHERE("user.account_name = #{accountName}");
                 }
                 if(pageSelectDto.getStatus().equals("Pending")){
-                    WHERE("start_time &gt; UNIX_TIMESTAMP()*1000");
+                    WHERE("start_time > UNIX_TIMESTAMP()*1000");
                 }
                 if(pageSelectDto.getStatus().equals("Runing")){
-                    WHERE("start_time &lt; UNIX_TIMESTAMP()*1000");
-                    WHERE("(start_time+duration) &gt; UNIX_TIMESTAMP()*1000");
+                    WHERE("start_time < UNIX_TIMESTAMP()*1000");
+                    WHERE("(start_time+duration) > UNIX_TIMESTAMP()*1000");
                 }
                 if(pageSelectDto.getStatus().equals("Ended")){
-                    WHERE("(start_time+duration) &lt; UNIX_TIMESTAMP()*1000");
+                    WHERE("(start_time+duration) < UNIX_TIMESTAMP()*1000");
                 }
                 if(pageSelectDto.getContestType() != null){
                     WHERE("contest_type = #{contestType}");
                 }
                 ORDER_BY("contest.id desc");
             }}.toString();
+            return tmp;
         }
         public String updateContestProblemByPrimaryKey(ContestProblem contestProblem){
             return new SQL(){{

@@ -60,7 +60,7 @@ public interface ProblemDao {
                     WHERE("remote_problem_id = #{remoteProblemId}");
                 }
                 if(pageSelectDto.getTitle() != null){
-                    WHERE("title like '%${title}%'");
+                    WHERE("title like CONCAT('%',#{title},'%')");
                 }
             }}.toString();
         }
@@ -123,7 +123,7 @@ public interface ProblemDao {
                     WHERE("remote_problem_id = #{remoteProblemId}");
                 }
                 if(pageSelectDto.getTitle() != null){
-                    WHERE("title like '%${title}%'");
+                    WHERE("title like CONCAT('%',#{title},'%')");
                 }
                 ORDER_BY("id");
             }}.toString() + " \nLIMIT #{start},#{size}";

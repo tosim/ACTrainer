@@ -41,7 +41,7 @@ public class UserController {
         return userService.getUserById(request,id);
     }
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
     @ResponseBody
     public RespJson updateUserById(HttpServletRequest request, @PathVariable("id") int id, @RequestBody User putUser){
         log.info("resive put user id = " + id);

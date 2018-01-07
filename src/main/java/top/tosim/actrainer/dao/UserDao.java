@@ -61,7 +61,7 @@ public interface UserDao {
                 SELECT("count(*)");
                 FROM("user");
                 if(pageSelectDto.getAccountName() != null){
-                    WHERE("account_name like '%${accountName}%'");
+                    WHERE("account_name like CONCAT('%',#{accountName},'%' )");
                 }
             }}.toString();
         }
@@ -70,7 +70,7 @@ public interface UserDao {
                 SELECT(partColumnList);
                 FROM("user");
                 if(pageSelectDto.getAccountName() != null){
-                    WHERE("account_name like '%${accountName}%'");
+                    WHERE("account_name like CONCAT('%',#{accountName},'%' )");
                 }
                 ORDER_BY("ac_count desc,(ac_count/(ac_count+fail_count)) desc");
             }}.toString() + " \nLIMIT #{start},#{size}";

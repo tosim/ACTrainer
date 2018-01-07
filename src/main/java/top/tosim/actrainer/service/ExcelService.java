@@ -22,7 +22,7 @@ public class ExcelService {
 
     public RespJson downloadContestRank(HttpServletResponse response, Integer contestId){
         RespJson respJson = new RespJson();
-        String fileName = "Contest_"+contestId+System.currentTimeMillis()+".xls"; //文件名
+        String fileName = "Contest_"+contestId+"_"+System.currentTimeMillis()+".xls"; //文件名
         String sheetName = "Contest_"+contestId;//sheet名
 
         RespJson originData = contestService.getContestRank(contestId);
